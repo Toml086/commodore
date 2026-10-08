@@ -1,0 +1,19 @@
+# Changes here will be overwritten by Copier
+_commit: v1.2.130
+_src_path: ../python-package-example
+additional_python_versions: []
+author_email: tom-luca.tettenborn@imms.de
+author_name: Tom-Luca Tettenborn
+description: commodore project
+dev_deps: uv
+distribution_name: commodore
+docs_type: README
+example_code: 'no'
+gitlab_group: paketzentrum
+gitlab_project: commodore
+main_python_version: '3.13'
+min_python_version: '3.12'
+mode: full
+package_name: commodore
+package_registry: local
+test_type: pytest

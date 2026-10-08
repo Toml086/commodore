@@ -1,0 +1,15 @@
+.cache
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.tox
+.venv
+__pycache__
+build
+dist
+reports
+wheels
+docs/site
+.coverage*
+*.py[ocd]
+*.egg-info
