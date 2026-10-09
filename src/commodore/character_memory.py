@@ -14,7 +14,7 @@ class CharacterMemory:
 
     def write(self, row: int, col: int, signal: Signal) -> None:
         if 0 <= row < len(self.matrix) and 0 <= col < len(self.matrix[row]):
-            self.matrix[row][col] = signal
+            self.engine.set(self.matrix[row][col], signal)
 
         else:
             raise IndexError('Out of bound')

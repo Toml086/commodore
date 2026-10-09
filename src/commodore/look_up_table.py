@@ -6,6 +6,7 @@ class LookUpTable:
         self.engine = engine
 
         self.encode_lut = {
+            # Alphabet (0-26)  # noqa: ERA001
             ' ': '000000',  # 0
             'A': '000001',  # 1
             'B': '000010',  # 2
@@ -33,6 +34,7 @@ class LookUpTable:
             'X': '011000',  # 24
             'Y': '011001',  # 25
             'Z': '011010',  # 26
+            # Numbers (27-36)  # noqa: ERA001
             '0': '011011',  # 27
             '1': '011100',  # 28
             '2': '011101',  # 29
@@ -43,5 +45,6 @@ class LookUpTable:
             '7': '100010',  # 34
             '8': '100011',  # 35
             '9': '100100',  # 36
+            # Special Characters
             '?': '111111',  # 63 (for unknown)
         }

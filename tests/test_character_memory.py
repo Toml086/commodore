@@ -6,8 +6,7 @@ from src.commodore.character_memory import CharacterMemory
 
 class TestNormalUse(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
-
-        engine = CharacterMemory('test_engine')
+        engine = Engine('my_engine')
 
         self.char_memory = CharacterMemory(engine, character_bit_width=6, width=40, height=25)
         self.data_source = engine.define_local('data_source', 6, 0)
