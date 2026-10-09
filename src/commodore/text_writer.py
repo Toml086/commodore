@@ -20,7 +20,7 @@ class TextWriter:
     def user_write(self, engine: Engine) -> None:
         char_input = input('Enter input')
 
-        if char_input == '''xxx''':
+        if char_input == '[DEL]':
             self.clear()
             return
 

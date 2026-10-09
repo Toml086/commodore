@@ -19,5 +19,6 @@
     },
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
-    "mypy-type-checker.importStrategy": "fromEnvironment"
+    "mypy-type-checker.importStrategy": "fromEnvironment",
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }
