@@ -5,15 +5,28 @@ class Cursor:
         self.col = 0
         self.row = 0
 
+    def position(self) -> tuple[int, int]:
+        return (self.row, self.col)
+
     def next(self) -> None:
         if self.col == self.max_columns - 1:
             self.col = 0
             self.row += 1
-            if self.row == self.max_rows:
-                self.row = 0
+
+        elif self.col == 39 & self.row == 24:
+            self.row = 0
+            self.col = 0
 
         else:
             self.col += 1
 
-    def position(self) -> tuple[int, int]:
-        return (self.row, self.col)
+    def prev(self) -> None:
+        if self.col == 0 & self.row == 0:
+            raise IndexError('Out of bound')
+
+        elif self.col == 0:
+            self.col = self.max_columns - 1
+            self.row -= 1
+
+        else:
+            self.col -= 1

@@ -17,11 +17,27 @@ class TextWriter:
         self.cursor = cursor
         self.character_memory = self.character_memory
 
-    def user_write(self, engine: Engine) -> Signal:
-        user_input = input('Enter input')
-        engine.define_input('USER_INPUT', 6)
+    def user_write(self, engine: Engine) -> None:
+        char_input = input('Enter input')
+
+        if char_input == '''xxx''':
+            self.clear()
+            return
+
+        else:
+            signal_input = engine.define_input('USER_INPUT', 6)
+            char_input.'''toBinary()'''
+            engine.set(signal_input, char_input)
+            writing_pos_row = self.cursor.position()[0]
+            writing_pos_col = self.cursor.position()[1]
+            self.character_memory.write(writing_pos_row, writing_pos_col, signal_input)
+            self.cursor.next()
+
+    def clear(self, engine: Engine) -> None:
+        zero_signal = engine.define_input('ZERO_INPUT', 6)
+        empty_signal = engine.set(zero_signal, 0)
         writing_pos_row = self.cursor.position()[0]
         writing_pos_col = self.cursor.position()[1]
-        self.character_memory.write(writing_pos_row, writing_pos_col, user_input)
+        self.character_memory.write(writing_pos_row, writing_pos_col, empty_signal)
 
-        self.cursor.next()
+        self.cursor.prev()
