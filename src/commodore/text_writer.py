@@ -1,21 +1,18 @@
 from nortl import Engine
-from nortl.components import Timer
-from nortl.core.manager.signal_manager import SignalManager
-from nortl.renderer.verilog_utils.print_handlers import to_verilog
 
-from commodore.character_memory.CharacterMemory import CharacterMemory
-from commodore.cursor.Cursor import Cursor
-from commodore.sender_reciever.bit_stream_sender import BitStreamSender
+from commodore.cursor import Cursor
 from src.commodore.character_memory import CharacterMemory
+from src.commodore.look_up_table import LookUpTable
 
 
 class TextWriter:
-    def __init__(self, engine: Engine, module_name: str, cursor: Cursor, character_memory: CharacterMemory) -> None:
+    def __init__(self, engine: Engine, module_name: str, cursor: Cursor, character_memory: CharacterMemory, look_up_table: LookUpTable) -> None:
         self.engine = engine
         self.character_memory = CharacterMemory(self)
         self.module_name = module_name
         self.cursor = cursor
         self.character_memory = self.character_memory
+        self.look_up_table = look_up_table
 
     def user_write(self, engine: Engine) -> None:
         char_input = input('Enter input')
@@ -26,8 +23,7 @@ class TextWriter:
 
         else:
             signal_input = engine.define_input('USER_INPUT', 6)
-            char_input.'''toBinary()'''
-            engine.set(signal_input, char_input)
+            engine.set(signal_input, self.look_up_table.table.red(signal_input))  # input in LUT index
             writing_pos_row = self.cursor.position()[0]
             writing_pos_col = self.cursor.position()[1]
             self.character_memory.write(writing_pos_row, writing_pos_col, signal_input)

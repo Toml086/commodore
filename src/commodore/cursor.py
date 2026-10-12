@@ -8,6 +8,10 @@ class Cursor:
     def position(self) -> tuple[int, int]:
         return (self.row, self.col)
 
+    def set_position(self, row: int, col: int) -> None:
+        self.row = row
+        self.col = col
+
     def next(self) -> None:
         if self.col == self.max_columns - 1:
             self.col = 0
