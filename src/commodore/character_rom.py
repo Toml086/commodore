@@ -86,5 +86,5 @@ class CharacterRom:
 
         self.pixel_table = LookupTable(flat_rom_matrix, default=0)
 
-    def get_gpu_pixel(self, character_id: Signal) -> Signal:
+    def get_gpu_pixel(self, character_id: Signal) -> list:
         return self.pixel_table(character_id)
