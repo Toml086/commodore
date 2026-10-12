@@ -1,5 +1,6 @@
 from nortl import Engine
 from nortl.components.lookup_table import LookupTable
+from nortl.core import Signal
 
 from src.commodore.look_up_table import LookUpTable
 
@@ -73,3 +74,17 @@ class CharacterRom:
             [0x00, 0x70, 0x18, 0x18, 0x0C, 0x18, 0x18, 0x70],  # 58: '}'
             [0x00, 0x00, 0x24, 0x18, 0x7E, 0x18, 0x24, 0x00],  # 59: '*'
         ]
+
+        flat_rom_matrix = []
+        for hex_bytes in font_patterns:
+            flat_64_bits = []
+            for byte in hex_bytes:
+                for i in range(8):
+                    bit = (byte >> (7 - i)) & 1
+                    flat_64_bits.append(bit)
+            flat_rom_matrix.append(flat_64_bits)
+
+        self.pixel_table = LookupTable(flat_rom_matrix, default=0)
+
+    def get_gpu_pixel(self, character_id: Signal) -> Signal:
+        return self.pixel_table(character_id)

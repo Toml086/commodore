@@ -24,16 +24,14 @@ class TextWriter:
         else:
             signal_input = engine.define_input('USER_INPUT', 6)
             engine.set(signal_input, self.look_up_table.table.red(signal_input))  # input in LUT index
-            writing_pos_row = self.cursor.position()[0]
-            writing_pos_col = self.cursor.position()[1]
+            writing_pos_row, writing_pos_col = self.cursor.position()  # pos_row = index(0), pos_col = index(1)
             self.character_memory.write(writing_pos_row, writing_pos_col, signal_input)
             self.cursor.next()
 
     def clear(self, engine: Engine) -> None:
         zero_signal = engine.define_input('ZERO_INPUT', 6)
         empty_signal = engine.set(zero_signal, 0)
-        writing_pos_row = self.cursor.position()[0]
-        writing_pos_col = self.cursor.position()[1]
+        writing_pos_row, writing_pos_col = self.cursor.position()  # pos_row = index(0), pos_col = index(1)
         self.character_memory.write(writing_pos_row, writing_pos_col, empty_signal)
 
         self.cursor.prev()
