@@ -5,7 +5,7 @@ class Cursor:
         self.col = 0
         self.row = 0
 
-    def position(self) -> tuple[int, int]:
+    def get_position(self) -> tuple[int, int]:
         return (self.row, self.col)
 
     def set_position(self, row: int, col: int) -> None:

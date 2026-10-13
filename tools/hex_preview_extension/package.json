@@ -1,7 +1,11 @@
 {
   "name": "hex-pixel-preview",
+  "displayName": "Hex Pixel Preview",
+  "description": "Shows Pixel Preview for 8 Hex-Bytes",
   "version": "0.0.1",
+  "publisher": "lokal",
   "engines": { "vscode": "^1.80.0" },
+  "categories": ["Other"],
   "activationEvents": ["onLanguage:python"],
   "main": "./extension.js"
 }

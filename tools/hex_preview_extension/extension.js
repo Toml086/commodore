@@ -57,7 +57,6 @@ function buildImage(bytes) {
 }
 
 function activate(context) {
-    console.log('Hex Pixel Preview aktiv');
 
     context.subscriptions.push(
         vscode.languages.registerHoverProvider('python', {

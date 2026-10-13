@@ -14,7 +14,11 @@ class GPU:
         self.look_up_table = look_up_table
         self.character_rom = character_rom
 
-    def read_char_memory(self):
-        pos_row, pos_col = self.cursor.position()  # pos_row = index(0), pos_col = index(1)
+    def coords_from_vga(self, x_coordinate: int, y_coordinate: int) -> None:
+        self.cursor.set_position(x_coordinate, y_coordinate)
+
+    def read_char_memory(self) -> None:
+        pos_row, pos_col = self.cursor.get_position()  # pos_row = index(0), pos_col = index(1)
         signal_in_pos = self.character_memory.read(pos_row, pos_col)
+
         signal_bitstream = self.character_rom.get_gpu_pixel(signal_in_pos)

@@ -1,7 +1,9 @@
 from nortl import Engine
 from nortl.utils.test_wrapper import NoRTLTestBase
 
-from src.commodore.character_memory import CharacterMemory
+from commodore.character_memory import CharacterMemory
+
+# test for char memory and text_writer
 
 
 class TestNormalUse(NoRTLTestBase[Engine]):
@@ -42,7 +44,7 @@ class TestNormalUse(NoRTLTestBase[Engine]):
 
         engine.sync()
 
-        # Case4 - fill all fields
+        # Case4 - fill and read all fields
         for row in range(25):
             for col in range(40):
                 target_value = (row + col) % 64
