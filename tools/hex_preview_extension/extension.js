@@ -1,9 +1,9 @@
 const vscode = require('vscode');
 const zlib = require('zlib');
 
-// 8 Hex-Werte in eckigen Klammern: [0x00, 0x3C, ..., 0x00]
+// RegEx for 8 Hex-Values in []: [0x00, 0x3C, ..., 0x00]
 const PATTERN = /\[\s*((?:0x[0-9A-Fa-f]{2}\s*,\s*){7}0x[0-9A-Fa-f]{2})\s*\]/g;
-const SIZE = 16; // Pixelgröße pro Feld -> Bild 128x128
+const SIZE = 16; // Pixelsize (128x128)
 
 function crc32(buf) {
     let crc = 0xFFFFFFFF;
@@ -44,8 +44,8 @@ function buildImage(bytes) {
     const ihdr = Buffer.alloc(13);
     ihdr.writeUInt32BE(W, 0);
     ihdr.writeUInt32BE(W, 4);
-    ihdr[8] = 8; // Bittiefe
-    ihdr[9] = 2; // Farbtyp RGB
+    ihdr[8] = 8;
+    ihdr[9] = 2;
 
     const png = Buffer.concat([
         Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),

@@ -3,7 +3,6 @@ from nortl import Engine
 from commodore.cursor import Cursor
 from src.commodore.character_memory import CharacterMemory
 from src.commodore.input_handler import InputHandler
-from src.commodore.look_up_table import LookUpTable
 
 
 class TextWriter:
@@ -13,14 +12,12 @@ class TextWriter:
         module_name: str,
         cursor: Cursor,
         character_memory: CharacterMemory,
-        look_up_table: LookUpTable,
         input_handler: InputHandler,
     ) -> None:
         self.engine = engine
         self.module_name = module_name
         self.cursor = cursor
         self.character_memory = character_memory
-        self.look_up_table = look_up_table
         self.input_handler = input_handler
 
     def user_write(self, engine: Engine) -> None:
@@ -37,7 +34,7 @@ class TextWriter:
 
         else:
             signal_local = engine.define_input('USER_LOCAL', 6)
-            engine.set(signal_local, self.look_up_table.read(signal_local))  # input in LUT index
+            engine.set(signal_local, handled_input)  # input in LUT index
             writing_pos_row, writing_pos_col = self.cursor.get_position()  # pos_row = index(0), pos_col = index(1)
             self.character_memory.write(writing_pos_row, writing_pos_col, signal_local)
             self.cursor.next()

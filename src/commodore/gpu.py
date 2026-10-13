@@ -21,4 +21,4 @@ class GPU:
         pos_row, pos_col = self.cursor.get_position()  # pos_row = index(0), pos_col = index(1)
         signal_in_pos = self.character_memory.read(pos_row, pos_col)
 
-        signal_bitstream = self.character_rom.get_gpu_pixel(signal_in_pos)
+        signal_bitstream = self.character_rom.get_gpu_pixel_data(signal_in_pos)

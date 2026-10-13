@@ -77,8 +77,8 @@ class LookUpTable:
             default=0,
         )
 
-    def read(self, char: str) -> Signal:
-        index = self.table.read(char)
+    def read(self, table_index: int) -> Signal:
+        index = self.table.read(table_index)
         local = self.engine.define_local('INDEX', 6)
         self.engine.set(local, index)
         return local
