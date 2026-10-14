@@ -12,7 +12,7 @@ class GPU:
         self.character_memory = character_memory
         self.character_rom = character_rom
 
-    def coords_from_vga(self, x_coordinate: int, y_coordinate: int) -> None:
+    def set_coords_from_vga_as_cursor_pos(self, x_coordinate: int, y_coordinate: int) -> None:
         self.cursor.set_position(x_coordinate, y_coordinate)
 
     def read_char_memory(self) -> None:

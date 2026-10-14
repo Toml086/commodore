@@ -30,12 +30,11 @@ class TestTextWriter(NoRTLTestBase[Engine]):
 
         test_signal_local = engine.define_local('TEST_LOCAL', 6)
         engine.set(test_signal_local, 33)
-        char_0_0 = self.char_memory.read(0, 0)
 
         cursor_pos_row, cursor_pos_col = self.cursor.get_position()
 
         # Assert
-        self.assertEqual(test_signal_local, char_0_0)
+        self.assertEqual(test_signal_local, self.char_memory.read(0, 0))
         assert (cursor_pos_row, cursor_pos_col) == (0, 1)
 
         # ------Case2 - write multiple chars------
@@ -47,10 +46,6 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         self.text_writer.user_write(engine, 'D')
 
         cursor_pos_row, cursor_pos_col = self.cursor.get_position()
-        char_0_0 = self.char_memory.read(0, 0)
-        char_0_1 = self.char_memory.read(0, 1)
-        char_0_2 = self.char_memory.read(0, 2)
-        char_0_3 = self.char_memory.read(0, 3)
 
         test_signal_local_0_0 = engine.define_local('TEST_LOCAL_0_0', 6)
         engine.set(test_signal_local_0_0, 33)
@@ -65,10 +60,10 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         engine.set(test_signal_local_0_3, 36)
 
         # Assert
-        self.assertEqual(test_signal_local_0_0, char_0_0)
-        self.assertEqual(test_signal_local_0_1, char_0_1)
-        self.assertEqual(test_signal_local_0_2, char_0_2)
-        self.assertEqual(test_signal_local_0_3, char_0_3)
+        self.assertEqual(test_signal_local_0_0, self.char_memory.read(0, 0))
+        self.assertEqual(test_signal_local_0_1, self.char_memory.read(0, 1))
+        self.assertEqual(test_signal_local_0_2, self.char_memory.read(0, 2))
+        self.assertEqual(test_signal_local_0_3, self.char_memory.read(0, 3))
         assert (cursor_pos_row, cursor_pos_col) == (0, 4)
 
         # ------Case3 - line break for end of row------
