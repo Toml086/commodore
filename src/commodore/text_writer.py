@@ -1,5 +1,4 @@
 from nortl import Engine
-from nortl.core import Signal
 
 from commodore.character_memory import CharacterMemory
 from commodore.cursor import Cursor
@@ -47,10 +46,11 @@ class TextWriter:
         self.character_memory.write(writing_pos_row, writing_pos_col, 0)
 
     def clear_all(self, engine: Engine) -> None:
+        self.cursor.set_position(self.cursor.max_rows - 1, self.cursor.max_columns - 1)
         while True:
+            writing_pos_row, writing_pos_col = self.cursor.get_position()
+            self.character_memory.write(writing_pos_row, writing_pos_col, 0)
             try:
                 self.cursor.prev()
             except IndexError:
                 break
-            writing_pos_row, writing_pos_col = self.cursor.get_position()
-            self.character_memory.write(writing_pos_row, writing_pos_col, 0)
