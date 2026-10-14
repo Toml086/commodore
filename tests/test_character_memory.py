@@ -6,7 +6,7 @@ from commodore.character_memory import CharacterMemory
 # test for char memory and units of text_writer
 
 
-class TestNormalUse(NoRTLTestBase[Engine]):
+class TestCharMemory(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
         engine = Engine('my_engine')
 

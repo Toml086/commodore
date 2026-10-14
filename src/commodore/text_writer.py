@@ -1,8 +1,9 @@
 from nortl import Engine
+from nortl.core import Signal
 
+from commodore.character_memory import CharacterMemory
 from commodore.cursor import Cursor
-from src.commodore.character_memory import CharacterMemory
-from src.commodore.input_handler import InputHandler
+from commodore.input_handler import InputHandler
 
 
 class TextWriter:
@@ -20,40 +21,36 @@ class TextWriter:
         self.character_memory = character_memory
         self.input_handler = input_handler
 
-    def user_write(self, engine: Engine) -> None:
-        char_input = input('Enter input')
+    def user_write(self, engine: Engine, char_input: str) -> None:
+        engine.sync()
         handled_input = self.input_handler.handle_input(char_input)
 
-        if handled_input == '[xxxxxx]':
-            self.clear()
+        if handled_input == 1:  # change + test!!!! current -> !
+            self.clear(engine)
             return
 
-        elif handled_input == '[xxxxxx]':
-            self.clear_all()
+        elif handled_input == 31:  # change + test!!!!  current -> ?
+            self.clear_all(engine)
             return
 
         else:
-            signal_local = engine.define_input('USER_LOCAL', 6)
-            engine.set(signal_local, handled_input)  # input in LUT index
             writing_pos_row, writing_pos_col = self.cursor.get_position()  # pos_row = index(0), pos_col = index(1)
-            self.character_memory.write(writing_pos_row, writing_pos_col, signal_local)
+            self.character_memory.write(writing_pos_row, writing_pos_col, handled_input)
             self.cursor.next()
 
     def clear(self, engine: Engine) -> None:
-        zero_signal = engine.define_input('ZERO_INPUT', 6)
-        empty_signal = engine.set(zero_signal, 0)
+        try:
+            self.cursor.prev()
+        except IndexError:
+            return
         writing_pos_row, writing_pos_col = self.cursor.get_position()  # pos_row = index(0), pos_col = index(1)
-        self.character_memory.write(writing_pos_row, writing_pos_col, empty_signal)
-
-        self.cursor.prev()
+        self.character_memory.write(writing_pos_row, writing_pos_col, 0)
 
     def clear_all(self, engine: Engine) -> None:
-        zero_signal = engine.define_input('ZERO_INPUT', 6)
-        empty_signal = engine.set(zero_signal, 0)
         while True:
-            writing_pos_row, writing_pos_col = self.cursor.get_position()
-            if writing_pos_col == 0 & writing_pos_col == 0:
-                return
-            else:
-                self.character_memory.write(writing_pos_row, writing_pos_col, empty_signal)
+            try:
                 self.cursor.prev()
+            except IndexError:
+                break
+            writing_pos_row, writing_pos_col = self.cursor.get_position()
+            self.character_memory.write(writing_pos_row, writing_pos_col, 0)

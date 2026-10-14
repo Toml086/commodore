@@ -6,7 +6,7 @@ from commodore.input_handler import InputHandler
 # test for input handler and units of text_writer
 
 
-class TestNormalConvert(NoRTLTestBase[Engine]):
+class TestInputHandler(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
         engine = Engine('my_engine')
 
