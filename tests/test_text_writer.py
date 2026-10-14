@@ -170,7 +170,7 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         # Assert
         assert (cursor_pos_row, cursor_pos_col) == (0, 0)
 
-        # ------Case9 - normal use of clear all------
+        # ------Case9 - normal use of clear_all with random inputs------
         # Arrange & Act
         self.text_writer.user_write(engine, 'H')
         self.cursor.set_position(0, 5)
@@ -181,3 +181,36 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         self.text_writer.user_write(engine, 'L')
         self.cursor.set_position(20, 20)
         self.text_writer.user_write(engine, 'O')
+
+        C9_test_signal_zero_local = engine.define_local('C9_0_0', 6)
+        engine.set(C9_test_signal_zero_local, 0)
+
+        self.text_writer.user_write(engine, '?')  # command for clear_all()
+        cursor_pos_row, cursor_pos_col = self.cursor.get_position()
+
+        # Assert
+        assert (cursor_pos_row, cursor_pos_col) == (0, 0)
+        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(0, 0))
+        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(0, 5))
+        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(1, 3))
+        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(5, 20))
+        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(20, 20))
+
+        # ------Case10 - clear_all with all fields filled------
+        # Arrange & Act
+        for row in range(25):
+            for col in range(40):
+                target_value = (row + col) % 63 + 1
+                dynamic_signal = engine.define_local(f'dym_signal{row}_{col}', 6)
+                engine.set(dynamic_signal, target_value)
+                engine.sync()
+                self.char_memory.write(row, col, dynamic_signal)
+
+        self.text_writer.user_write(engine, '?')  # command for clear_all()
+
+        # Assert
+        for row in range(25):
+            for col in range(40):
+                read_signal = self.char_memory.read(row, col)
+
+                self.assertEqual(read_signal, 0)
