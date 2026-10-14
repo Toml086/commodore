@@ -1,8 +1,8 @@
 from nortl import Engine
 
-from commodore.character_memory import CharacterMemory
-from commodore.cursor import Cursor
-from commodore.input_handler import InputHandler
+from commodore.components.character_memory import CharacterMemory
+from commodore.components.cursor import Cursor
+from commodore.tables.input_handler import InputHandler
 
 
 class TextWriter:

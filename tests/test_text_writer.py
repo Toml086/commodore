@@ -1,10 +1,10 @@
 from nortl import Engine
 from nortl.utils.test_wrapper import NoRTLTestBase
 
-from commodore.character_memory import CharacterMemory
-from commodore.cursor import Cursor
-from commodore.input_handler import InputHandler
-from commodore.text_writer import TextWriter
+from commodore.components.character_memory import CharacterMemory
+from commodore.components.cursor import Cursor
+from commodore.components.text_writer import TextWriter
+from commodore.tables.input_handler import InputHandler
 
 # test for text writer and cursor
 

@@ -1,7 +1,7 @@
 from nortl import Engine
 from nortl.utils.test_wrapper import NoRTLTestBase
 
-from commodore.input_handler import InputHandler
+from commodore.tables.input_handler import InputHandler
 
 # test for input handler and units of text_writer
 
@@ -19,7 +19,8 @@ class TestInputHandler(NoRTLTestBase[Engine]):
         pass
 
     def the_testbench(self, engine: Engine) -> None:
-        # converts valid input to valid signal
+        # ------Case1 - converts valid input to valid signal------
+        # Arrange & Act
         user_input = 'A'
         handled_user_input = self.in_handler.handle_input(user_input)
         value_local = self.engine.define_local('VALUE_INDEX', 6)
@@ -28,9 +29,11 @@ class TestInputHandler(NoRTLTestBase[Engine]):
         assertion_local = self.engine.define_local('ASSERTION_INDEX', 6)
         self.engine.set(assertion_local, 33)
 
+        # Assert
         self.assertEqual(assertion_local, value_local)
 
-        # converts unknown input to space(index 0)
+        # ------Case2 - converts unknown input to space(index 0)------
+        # Arrange & Act
         user_input = 'Ä'
         handled_user_input = self.in_handler.handle_input(user_input)
         value_local = self.engine.define_local('VALUE_INDEX_INVALID', 6)
@@ -39,4 +42,5 @@ class TestInputHandler(NoRTLTestBase[Engine]):
         assertion_local = self.engine.define_local('ASSERTION_INDEX_ZERO', 6)
         self.engine.set(assertion_local, 0)
 
+        # Assert
         self.assertEqual(assertion_local, value_local)

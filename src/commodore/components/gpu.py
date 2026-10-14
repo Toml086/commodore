@@ -1,17 +1,15 @@
 from nortl import Engine
 
-from src.commodore.character_memory import CharacterMemory
-from src.commodore.character_rom import CharacterRom
-from src.commodore.cursor import Cursor
-from src.commodore.look_up_table import LookUpTable
+from commodore.components.character_memory import CharacterMemory
+from commodore.components.cursor import Cursor
+from commodore.tables.character_rom import CharacterRom
 
 
 class GPU:
-    def __init__(self, engine: Engine, cursor: Cursor, character_memory: CharacterMemory, look_up_table: LookUpTable, character_rom: CharacterRom):
+    def __init__(self, engine: Engine, cursor: Cursor, character_memory: CharacterMemory, character_rom: CharacterRom):
         self.engine = engine
         self.cursor = cursor
         self.character_memory = character_memory
-        self.look_up_table = look_up_table
         self.character_rom = character_rom
 
     def coords_from_vga(self, x_coordinate: int, y_coordinate: int) -> None:
