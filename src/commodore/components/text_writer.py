@@ -9,13 +9,11 @@ class TextWriter:
     def __init__(
         self,
         engine: Engine,
-        module_name: str,
         cursor: Cursor,
         character_memory: CharacterMemory,
         input_handler: InputHandler,
     ) -> None:
         self.engine = engine
-        self.module_name = module_name
         self.cursor = cursor
         self.character_memory = character_memory
         self.input_handler = input_handler

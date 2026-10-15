@@ -16,7 +16,7 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         self.char_memory = CharacterMemory(engine)
         self.input_handler = InputHandler(engine)
 
-        self.text_writer = TextWriter(engine, 'test', self.cursor, self.char_memory, self.input_handler)
+        self.text_writer = TextWriter(engine, self.cursor, self.char_memory, self.input_handler)
 
         return engine
 

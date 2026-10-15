@@ -13,8 +13,13 @@ class Cursor:
         return (self.row, self.col)
 
     def set_position(self, row: int, col: int) -> None:
-        self.row = row
-        self.col = col
+        if row <= self.max_rows - 1 and col <= self.max_columns - 1:
+            self.row = row
+            self.col = col
+
+        else:
+            self.row = 0
+            self.col = 0
 
     def next(self) -> None:
         if self.col == self.max_columns - 1 and self.row == self.max_rows - 1:
