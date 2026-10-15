@@ -168,13 +168,12 @@ class TestLineBreakForStartOfRow(TextWriterTestBase):
 
 class TestLineBreakStartOfTable(TextWriterTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # (expected: does nothing)
         # Arrange & Act
 
         self.text_writer.user_write(engine, '!')
         cursor_pos_row, cursor_pos_col = self.cursor.get_position()
 
-        # Assert
+        # Assert (expected: does nothing)
         assert (cursor_pos_row, cursor_pos_col) == (0, 0)
 
 

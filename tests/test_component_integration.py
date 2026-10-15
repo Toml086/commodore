@@ -8,6 +8,8 @@ from commodore.components.text_writer import TextWriter
 from commodore.tables.character_rom import CharacterRom
 from commodore.tables.input_handler import InputHandler
 
+# test for use of all components together
+
 
 class ComponentIntegrationTestBase(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
