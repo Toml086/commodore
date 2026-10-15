@@ -9,7 +9,7 @@ from commodore.tables.character_rom import CharacterRom
 # test for gpu and parts of cursor
 
 
-class TestGPU(NoRTLTestBase[Engine]):
+class GPUTestBase(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
         engine = Engine('my_engine')
 
@@ -23,8 +23,9 @@ class TestGPU(NoRTLTestBase[Engine]):
     def dut(self, engine: Engine) -> None:
         pass
 
+
+class TestSetCoordsFromVGACorrect(GPUTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # ------Case1 - set coords from vga correctly------
         # Arrange & Act
         self.gpu.set_coords_from_vga_as_cursor_pos(10, 20)
         first_pos_row, first_pos_col = self.cursor.get_position()
@@ -34,7 +35,9 @@ class TestGPU(NoRTLTestBase[Engine]):
         assert (first_pos_row, first_pos_col) == (10, 20)
         assert (self.cursor.get_position()) == (20, 38)
 
-        # ------Case2 - set coords from vga with wrong row index------
+
+class TestSetCoordsWithWrongRowIndex(GPUTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
         self.cursor.set_position(10, 20)
         self.gpu.set_coords_from_vga_as_cursor_pos(25, 10)
@@ -42,7 +45,9 @@ class TestGPU(NoRTLTestBase[Engine]):
         # Assert
         assert (self.cursor.get_position()) == (0, 0)
 
-        # ------Case2 - set coords from vga with wrong col index------
+
+class TestSetCoordsWithWrongColIndex(GPUTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
         self.cursor.set_position(10, 20)
         self.gpu.set_coords_from_vga_as_cursor_pos(10, 40)

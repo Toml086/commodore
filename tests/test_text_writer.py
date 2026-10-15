@@ -9,7 +9,7 @@ from commodore.tables.input_handler import InputHandler
 # test for text writer and cursor
 
 
-class TestTextWriter(NoRTLTestBase[Engine]):
+class TextWriterTestBase(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
         engine = Engine('my_engine')
         self.cursor = Cursor(engine)
@@ -23,8 +23,9 @@ class TestTextWriter(NoRTLTestBase[Engine]):
     def dut(self, engine: Engine) -> None:
         pass
 
+
+class TestNormalWrite(TextWriterTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # ------Case1 - normal write------
         # Arrange & Act
         self.text_writer.user_write(engine, 'A')
 
@@ -37,9 +38,10 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         self.assertEqual(test_signal_local, self.char_memory.read(0, 0))
         assert (cursor_pos_row, cursor_pos_col) == (0, 1)
 
-        # ------Case2 - write multiple chars------
+
+class TestWriteMultipleChars(TextWriterTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
-        self.cursor.set_position(0, 0)
         self.text_writer.user_write(engine, 'A')
         self.text_writer.user_write(engine, 'B')
         self.text_writer.user_write(engine, 'C')
@@ -66,7 +68,9 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         self.assertEqual(test_signal_local_0_3, self.char_memory.read(0, 3))
         assert (cursor_pos_row, cursor_pos_col) == (0, 4)
 
-        # ------Case3 - line break for end of row------
+
+class TestLineBreakForEndOfRow(TextWriterTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
         self.cursor.set_position(0, 38)
         self.text_writer.user_write(engine, 'H')
@@ -77,7 +81,9 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         # Assert
         assert (cursor_pos_row, cursor_pos_col) == (1, 0)
 
-        # ------Case4 - line break for end of table------
+
+class TestLineBreakForEndOfTable(TextWriterTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
         self.cursor.set_position(24, 38)
         self.text_writer.user_write(engine, 'H')
@@ -88,9 +94,10 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         # Assert
         assert (cursor_pos_row, cursor_pos_col) == (0, 0)
 
-        # ------Case5 - normal clear------
+
+class TestNormalClear(TextWriterTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
-        self.cursor.set_position(0, 0)
         self.text_writer.user_write(engine, 'H')
         self.text_writer.user_write(engine, '!')  # command for clear()
 
@@ -102,9 +109,10 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         self.assertEqual(test_signal_local_empty, self.char_memory.read(0, 0))
         assert (cursor_pos_row, cursor_pos_col) == (0, 0)
 
-        # ------Case6 - clear multiple chars------
+
+class TestClearMultipleChars(TextWriterTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
-        self.cursor.set_position(0, 0)
         self.text_writer.user_write(engine, 'H')
         self.text_writer.user_write(engine, 'E')
         self.text_writer.user_write(engine, 'L')
@@ -116,48 +124,52 @@ class TestTextWriter(NoRTLTestBase[Engine]):
 
         cursor_pos_row, cursor_pos_col = self.cursor.get_position()
 
-        C6_test_signal_local_0_0 = engine.define_local('C6_TEST_LOCAL_0_0', 6)
-        engine.set(C6_test_signal_local_0_0, 40)
+        test_signal_local_0_0 = engine.define_local('TEST_LOCAL_0_0', 6)
+        engine.set(test_signal_local_0_0, 40)
 
-        C6_test_signal_local_0_1 = engine.define_local('C6_TEST_LOCAL_0_1', 6)
-        engine.set(C6_test_signal_local_0_1, 37)
+        test_signal_local_0_1 = engine.define_local('TEST_LOCAL_0_1', 6)
+        engine.set(test_signal_local_0_1, 37)
 
-        C6_test_signal_local_0_2 = engine.define_local('C6_TEST_LOCAL_0_2', 6)
-        engine.set(C6_test_signal_local_0_2, 44)
+        test_signal_local_0_2 = engine.define_local('TEST_LOCAL_0_2', 6)
+        engine.set(test_signal_local_0_2, 44)
 
-        C6_test_signal_local_0_3 = engine.define_local('C6_TEST_LOCAL_0_3', 6)
-        engine.set(C6_test_signal_local_0_3, 0)
+        test_signal_local_0_3 = engine.define_local('TEST_LOCAL_0_3', 6)
+        engine.set(test_signal_local_0_3, 0)
 
-        C6_test_signal_local_0_4 = engine.define_local('C6_TEST_LOCAL_0_4', 6)
-        engine.set(C6_test_signal_local_0_4, 0)
+        test_signal_local_0_4 = engine.define_local('TEST_LOCAL_0_4', 6)
+        engine.set(test_signal_local_0_4, 0)
 
         # Assert
-        self.assertEqual(C6_test_signal_local_0_0, self.char_memory.read(0, 0))
-        self.assertEqual(C6_test_signal_local_0_1, self.char_memory.read(0, 1))
-        self.assertEqual(C6_test_signal_local_0_2, self.char_memory.read(0, 2))
-        self.assertEqual(C6_test_signal_local_0_3, self.char_memory.read(0, 3))
-        self.assertEqual(C6_test_signal_local_0_4, self.char_memory.read(0, 4))
+        self.assertEqual(test_signal_local_0_0, self.char_memory.read(0, 0))
+        self.assertEqual(test_signal_local_0_1, self.char_memory.read(0, 1))
+        self.assertEqual(test_signal_local_0_2, self.char_memory.read(0, 2))
+        self.assertEqual(test_signal_local_0_3, self.char_memory.read(0, 3))
+        self.assertEqual(test_signal_local_0_4, self.char_memory.read(0, 4))
         assert (cursor_pos_row, cursor_pos_col) == (0, 3)
 
-        # ------Case7 - line break for start of row------
+
+class TestLineBreakForStartOfRow(TextWriterTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
         self.cursor.set_position(1, 1)
         self.text_writer.user_write(engine, '!')
         self.text_writer.user_write(engine, '!')
 
-        C7_zero_signal_local = engine.define_local('C7_zero_signal_local', 6)
-        engine.set(C7_zero_signal_local, 0)
+        zero_signal_local = engine.define_local('zero_signal_local', 6)
+        engine.set(zero_signal_local, 0)
 
         cursor_pos_row, cursor_pos_col = self.cursor.get_position()
 
         # Assert
-        self.assertEqual(C7_zero_signal_local, self.char_memory.read(1, 0))
-        self.assertEqual(C7_zero_signal_local, self.char_memory.read(0, 39))
+        self.assertEqual(zero_signal_local, self.char_memory.read(1, 0))
+        self.assertEqual(zero_signal_local, self.char_memory.read(0, 39))
         assert (cursor_pos_row, cursor_pos_col) == (0, 39)
 
-        # ------Case8 - line break for start of table (does nothing)------
+
+class TestLineBreakStartOfTable(TextWriterTestBase):
+    def the_testbench(self, engine: Engine) -> None:
+        # (expected: does nothing)
         # Arrange & Act
-        self.cursor.set_position(0, 0)
 
         self.text_writer.user_write(engine, '!')
         cursor_pos_row, cursor_pos_col = self.cursor.get_position()
@@ -165,7 +177,9 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         # Assert
         assert (cursor_pos_row, cursor_pos_col) == (0, 0)
 
-        # ------Case9 - normal use of clear_all with random inputs------
+
+class TestNormalUseClearAllRandomInputs(TextWriterTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
         self.text_writer.user_write(engine, 'H')
         self.cursor.set_position(0, 5)
@@ -177,21 +191,23 @@ class TestTextWriter(NoRTLTestBase[Engine]):
         self.cursor.set_position(20, 20)
         self.text_writer.user_write(engine, 'O')
 
-        C9_test_signal_zero_local = engine.define_local('C9_0_0', 6)
-        engine.set(C9_test_signal_zero_local, 0)
+        test_signal_zero_local = engine.define_local('test_local', 6)
+        engine.set(test_signal_zero_local, 0)
 
         self.text_writer.user_write(engine, '?')  # command for clear_all()
         cursor_pos_row, cursor_pos_col = self.cursor.get_position()
 
         # Assert
         assert (cursor_pos_row, cursor_pos_col) == (0, 0)
-        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(0, 0))
-        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(0, 5))
-        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(1, 3))
-        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(5, 20))
-        self.assertEqual(C9_test_signal_zero_local, self.char_memory.read(20, 20))
+        self.assertEqual(test_signal_zero_local, self.char_memory.read(0, 0))
+        self.assertEqual(test_signal_zero_local, self.char_memory.read(0, 5))
+        self.assertEqual(test_signal_zero_local, self.char_memory.read(1, 3))
+        self.assertEqual(test_signal_zero_local, self.char_memory.read(5, 20))
+        self.assertEqual(test_signal_zero_local, self.char_memory.read(20, 20))
 
-        # ------Case10 - clear_all with all fields filled------
+
+class TestClearAllWithAllFieldsFilled(TextWriterTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
         for row in range(25):
             for col in range(40):

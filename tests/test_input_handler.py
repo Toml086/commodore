@@ -6,7 +6,7 @@ from commodore.tables.input_handler import InputHandler
 # test for input handler and units of text_writer
 
 
-class TestInputHandler(NoRTLTestBase[Engine]):
+class InputHandlerTestBase(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
         engine = Engine('my_engine')
 
@@ -18,8 +18,9 @@ class TestInputHandler(NoRTLTestBase[Engine]):
     def dut(self, engine: Engine) -> None:
         pass
 
+
+class TestConvertsValidInputToValidSignal(InputHandlerTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # ------Case1 - converts valid input to valid signal------
         # Arrange & Act
         user_input = 'A'
         handled_user_input = self.in_handler.handle_input(user_input)
@@ -32,7 +33,9 @@ class TestInputHandler(NoRTLTestBase[Engine]):
         # Assert
         self.assertEqual(assertion_local, value_local)
 
-        # ------Case2 - converts unknown input to space(index 0)------
+
+class TestConvertsUnknownInputToSpace(InputHandlerTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
         user_input = 'Ä'
         handled_user_input = self.in_handler.handle_input(user_input)

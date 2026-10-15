@@ -6,7 +6,7 @@ from commodore.components.character_memory import CharacterMemory
 # test for char memory and units of text_writer
 
 
-class TestCharMemory(NoRTLTestBase[Engine]):
+class CharMemoryTestBase(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
         engine = Engine('my_engine')
 
@@ -18,15 +18,18 @@ class TestCharMemory(NoRTLTestBase[Engine]):
     def dut(self, engine: Engine) -> None:
         pass
 
+
+class TestInitialState(CharMemoryTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # ------Case1 - initial state------
         # Arrange & Act
         cell_0_0 = self.char_memory.read(0, 0)
 
         # Assert
         self.assertEqual(cell_0_0, 0)
 
-        # ------Case2 - read and write------
+
+class TestReadAndWrite(CharMemoryTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
 
         self.char_memory.write(1, 1, self.data_source)
@@ -34,14 +37,18 @@ class TestCharMemory(NoRTLTestBase[Engine]):
         # Assert
         self.assertEqual(self.data_source, read_signal)
 
-        # ------Case3 - test index out of bound errors------
+
+class TestIndexOutOfBoundError(CharMemoryTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         try:
             self.char_memory.write(0, 40, self.data_source)
             self.assertTrue(False)
         except IndexError:
             self.assertTrue(True)
 
-        # ------Case4 - fill and read all fields------
+
+class TestFillAndReadAllFields(CharMemoryTestBase):
+    def the_testbench(self, engine: Engine) -> None:
         for row in range(25):
             for col in range(40):
                 target_value = (row + col) % 64
