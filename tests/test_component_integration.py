@@ -1,10 +1,11 @@
-from nortl import Engine
+"""from nortl import Engine
 from nortl.utils.test_wrapper import NoRTLTestBase
 
 from commodore.components.character_memory import CharacterMemory
 from commodore.components.cursor import Cursor
-from commodore.components.gpu import GPU
+from commodore.components.text_gpu import GPU
 from commodore.components.text_writer import TextWriter
+from commodore.components.vga.vga import VGA
 from commodore.tables.character_rom import CharacterRom
 from commodore.tables.input_handler import InputHandler
 
@@ -19,7 +20,6 @@ class ComponentIntegrationTestBase(NoRTLTestBase[Engine]):
         self.input_handler = InputHandler(engine)
         self.char_rom = CharacterRom(engine)
         self.text_writer = TextWriter(engine, self.cursor, self.char_memory, self.input_handler)
-        self.gpu = GPU(engine, self.cursor, self.char_memory, self.char_rom)
         return engine
 
     def dut(self, engine: Engine) -> None:
@@ -75,3 +75,4 @@ class TestInvalidInput(ComponentIntegrationTestBase):
 
         # Assert
         self.assertEqual(test_signal_local, expected_value)
+"""

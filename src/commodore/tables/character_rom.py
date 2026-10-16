@@ -84,5 +84,5 @@ class CharacterRom:
 
         self.pixel_table = LookupTable(flat_rom, default=0)
 
-    def get_gpu_pixel_data(self, character_id: Signal) -> Renderable:
+    def get_gpu_pixel_data(self, character_id: Renderable) -> Renderable:
         return self.pixel_table.read(character_id)

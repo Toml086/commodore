@@ -1,5 +1,6 @@
-from nortl import Engine
+from nortl import Const, Engine, IfThenElse
 from nortl.core import Signal
+from nortl.core.protocols import Operand, Renderable
 
 
 class CharacterMemory:
@@ -23,3 +24,12 @@ class CharacterMemory:
             return self.matrix[row][col]
         else:
             raise IndexError('Out of bound')
+
+    def read_dynamic(self, row: Renderable, col: Renderable) -> Renderable:
+        result: Renderable = Const(0, self.character_bit_width)
+        for y, line in enumerate(self.matrix):
+            line_val: Renderable = Const(0, self.character_bit_width)
+            for x, cell in enumerate(line):
+                line_val = IfThenElse(col == x, cell, line_val)
+            result = IfThenElse(row == y, line_val, result)
+        return result

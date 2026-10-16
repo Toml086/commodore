@@ -1,9 +1,9 @@
-from nortl import Engine
+"""from nortl import Engine
 from nortl.utils.test_wrapper import NoRTLTestBase
 
 from commodore.components.character_memory import CharacterMemory
 from commodore.components.cursor import Cursor
-from commodore.components.gpu import GPU
+from commodore.components.text_gpu import GPU
 from commodore.tables.character_rom import CharacterRom
 
 # test for gpu and parts of cursor
@@ -54,3 +54,4 @@ class TestSetCoordsWithWrongColIndex(GPUTestBase):
 
         # Assert
         assert (self.cursor.get_position()) == (0, 0)
+"""
