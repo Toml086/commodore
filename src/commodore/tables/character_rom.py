@@ -1,4 +1,4 @@
-from nortl import Engine
+from nortl import Const, Engine
 from nortl.components.lookup_table import LookupTable
 from nortl.core.protocols import Renderable
 
@@ -79,7 +79,7 @@ class CharacterRom:
             value = 0
             for byte in hex_bytes:
                 value = (value << 8) | byte
-            flat_rom.append(value)
+            flat_rom.append(Const(value, 64))
 
         self.pixel_table = LookupTable(flat_rom, default=0)
 

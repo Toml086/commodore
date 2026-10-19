@@ -26,7 +26,7 @@ class MainEngine(Engine):
 
     def build(self) -> None:
         self.sync()
-        with self.fork('vga'):  # noqa: SIM117
+        with self.fork('vga'):
             self.vga.run()
 
         with self.while_loop(Const(True)):
