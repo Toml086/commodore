@@ -1,4 +1,6 @@
 from nortl import Engine
+from nortl.components import LookupTable
+from nortl.core import Signal
 
 
 class InputHandler:
@@ -66,5 +68,10 @@ class InputHandler:
             ']': 61,
         }
 
-    def handle_input(self, char_input: str) -> int:
-        return self.convert.get(char_input, 0)
+        table = [self.convert.get(chr(code), 0) for code in range(64)]  # range???? -> keyboard -> 8bit; task -> 6bit
+        self.lookup = LookupTable(table, default=0)
+
+        self.result: Signal = engine.define_local('input_code', 6, 0)
+
+    def handle_input(self, engine: Engine, key_code: Signal) -> None:
+        engine.set(self.result, self.lookup.read(key_code))

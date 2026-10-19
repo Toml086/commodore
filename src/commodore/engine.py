@@ -1,32 +1,42 @@
-from nortl import Engine
+from nortl import Const, Engine
 
 from commodore.components.character_memory import CharacterMemory
 from commodore.components.cursor import Cursor
 from commodore.components.text_gpu import TextGPU
 from commodore.components.text_writer import TextWriter
-from commodore.components.vga.objects import GraphicsObject
 from commodore.components.vga.vga import VGA
 from commodore.tables.character_rom import CharacterRom
 from commodore.tables.input_handler import InputHandler
 
 
-class MainEngine:
-    def __init__(
-        self,
-        engine: Engine,
-        char_memory: CharacterMemory,
-        cursor: Cursor,
-        text_gpu: TextGPU,
-        text_writer: TextWriter,
-        vga: VGA,
-        char_rom: CharacterRom,
-        input_handler: InputHandler,
-    ):
-        self.engine = engine
-        self.char_memory = char_memory
-        self.cursor = cursor
-        self.text_gpu = text_gpu
-        self.text_writer = text_writer
-        self.vga = vga
-        self.char_rom = char_rom
-        self.input_handler = input_handler
+class MainEngine(Engine):
+    def __init__(self, name: str):
+        super().__init__(name)
+
+        self.key_code = self.define_input('KEY_CODE', 8)
+        self.key_valid = self.define_input('KEY_VALID', 1)
+
+        self.char_memory = CharacterMemory(self)
+        self.cursor = Cursor(self)
+        self.char_rom = CharacterRom(self)
+        self.text_gpu = TextGPU(self, self.char_memory, self.char_rom)
+        self.input_handler = InputHandler(self)
+        self.text_writer = TextWriter(self, self.cursor, self.char_memory, self.input_handler)
+        self.vga = VGA(self, self.text_gpu)
+
+    def build(self) -> None:
+        self.sync()
+        with self.fork('vga'):  # noqa: SIM117
+            self.vga.run()
+
+        with self.while_loop(Const(True)):
+            self.wait_for(self.key_valid.rising())
+            self.text_writer.user_write(self, self.key_code)
+
+        with open('Commodore.sv', 'w') as fptr:
+            fptr.write(self.to_verilog())
+
+
+if __name__ == '__main__':
+    engine = MainEngine('Commodore')
+    engine.build()

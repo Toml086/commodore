@@ -30,9 +30,9 @@ class VGA:
     ``(counter_h, counter_v)`` position and acts as the pixel source.
     """
 
-    def __init__(self, engine: Engine, go: GraphicsObject):
+    def __init__(self, engine: Engine, text_gpu: GraphicsObject):
         self.engine = engine
-        self.stash = go
+        self.stash = text_gpu
         self.counter_v = engine.define_local('counter_v', (V_LINES - 1).bit_length(), reset_value=0)
         self.counter_h = engine.define_local('counter_h', (H_LINES - 1).bit_length(), reset_value=0)
 

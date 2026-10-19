@@ -1,6 +1,5 @@
 from nortl import Engine
 from nortl.components.lookup_table import LookupTable
-from nortl.core import Signal
 from nortl.core.protocols import Renderable
 
 

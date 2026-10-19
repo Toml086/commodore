@@ -1,4 +1,5 @@
 from nortl import Engine
+from nortl.core import Signal
 
 
 class Cursor:
@@ -6,40 +7,34 @@ class Cursor:
         self.engine = engine
         self.max_columns = max_columns
         self.max_rows = max_rows
-        self.col = 0
-        self.row = 0
+        self.col: Signal = engine.define_local('col_cursor', (max_columns - 1).bit_length(), 0)
+        self.row: Signal = engine.define_local('row_cursor', (max_rows - 1).bit_length(), 0)
 
-    def get_position(self) -> tuple[int, int]:
+    def get_position(self) -> tuple[Signal, Signal]:
         return (self.row, self.col)
 
-    def set_position(self, row: int, col: int) -> None:
-        if row <= self.max_rows - 1 and col <= self.max_columns - 1:
-            self.row = row
-            self.col = col
-
-        else:
-            self.row = 0
-            self.col = 0
+    def reset(self) -> None:
+        self.engine.set(self.col, 0)
+        self.engine.sync()
+        self.engine.set(self.row, 0)
 
     def next(self) -> None:
-        if self.col == self.max_columns - 1 and self.row == self.max_rows - 1:
-            self.row = 0
-            self.col = 0
+        with self.engine.condition(self.col == self.max_columns - 1):
+            self.engine.set(self.col, 0)
+            with self.engine.condition(self.row == self.max_rows - 1):
+                self.engine.set(self.row, 0)
 
-        elif self.col == self.max_columns - 1:
-            self.col = 0
-            self.row += 1
+            with self.engine.else_condition():
+                self.engine.set(self.row, self.row + 1)
 
-        else:
-            self.col += 1
+        with self.engine.else_condition():
+            self.engine.set(self.col, self.col + 1)
 
     def prev(self) -> None:
-        if self.col == 0 and self.row == 0:
-            raise IndexError('Out of bound')
-
-        elif self.col == 0:
-            self.col = self.max_columns - 1
-            self.row -= 1
-
-        else:
-            self.col -= 1
+        with self.engine.condition(self.col == 0):  # noqa: SIM117
+            with self.engine.condition(self.row != 0):
+                self.engine.set(self.col, self.max_columns - 1)
+                self.engine.sync()
+                self.engine.set(self.row, self.row - 1)
+        with self.engine.else_condition():
+            self.engine.set(self.col, self.col - 1)

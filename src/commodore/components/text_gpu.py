@@ -1,6 +1,5 @@
 from nortl import All, Const, Engine, IfThenElse
-from nortl.core import Signal
-from nortl.core.protocols import Operand, Renderable
+from nortl.core.protocols import Renderable
 
 from commodore.components.character_memory import CharacterMemory
 from commodore.components.vga.objects import GraphicsObject
