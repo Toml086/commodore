@@ -30,8 +30,7 @@ class CharacterMemory:
     def write_dynamic(self, row: Renderable, col: Renderable, value: Signal | int) -> None:
         for y, line in enumerate(self.matrix):
             for x, cell in enumerate(line):
-                with self.engine.condition((row == y) & (col == x)):
-                    self.engine.set(cell, value)
+                self.engine.set_when(cell, {(row == y) & (col == x): value})
 
     def read_dynamic(self, row: Renderable, col: Renderable) -> Renderable:
         result: Renderable = Const(0, self.character_bit_width)

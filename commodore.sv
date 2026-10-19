@@ -205,7 +205,7 @@ end
 endmodule
 
 
-module commodore  (input logic CLK_I,
+module Commodore  (input logic CLK_I,
 input logic RST_ASYNC_I,
 input logic [7:0] KEY_CODE,
 input logic KEY_VALID,
