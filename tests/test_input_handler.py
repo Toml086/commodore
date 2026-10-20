@@ -10,7 +10,7 @@ class InputHandlerTestBase(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
         engine = Engine('my_engine')
 
-        self.in_handler = InputHandler(engine)
+        self.input_handler = InputHandler(engine)
         self.data_source = engine.define_local('LOCAL', 6, 0)
 
         return engine
@@ -22,28 +22,22 @@ class InputHandlerTestBase(NoRTLTestBase[Engine]):
 class TestConvertsValidInputToValidSignal(InputHandlerTestBase):
     def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
-        user_input = 'A'
-        handled_user_input = self.in_handler.handle_input(user_input)
-        value_local = self.engine.define_local('VALUE_INDEX', 6)
-        self.engine.set(value_local, handled_user_input)
-
-        assertion_local = self.engine.define_local('ASSERTION_INDEX', 6)
-        self.engine.set(assertion_local, 33)
+        user_input = 0x41  # =A
+        key_code = engine.define_local('KEY_CODE', 8)
+        engine.set(key_code, user_input)
+        self.input_handler.handle_input(engine, key_code)
 
         # Assert
-        self.assertEqual(assertion_local, value_local)
+        self.assertEqual(self.input_handler.result, 33)
 
 
-class TestConvertsUnknownInputToSpace(InputHandlerTestBase):
+class TestConvertsValidUnknownInputToSpace(InputHandlerTestBase):
     def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
-        user_input = 'Ä'
-        handled_user_input = self.in_handler.handle_input(user_input)
-        value_local = self.engine.define_local('VALUE_INDEX_INVALID', 6)
-        self.engine.set(value_local, handled_user_input)
-
-        assertion_local = self.engine.define_local('ASSERTION_INDEX_ZERO', 6)
-        self.engine.set(assertion_local, 0)
+        user_input = 0xC4  # =Ä
+        key_code = engine.define_local('KEY_CODE', 8)
+        engine.set(key_code, user_input)
+        self.input_handler.handle_input(engine, key_code)
 
         # Assert
-        self.assertEqual(assertion_local, value_local)
+        self.assertEqual(self.input_handler.result, 0)

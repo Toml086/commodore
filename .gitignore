@@ -13,3 +13,4 @@ docs/site
 .coverage*
 *.py[ocd]
 *.egg-info
+run

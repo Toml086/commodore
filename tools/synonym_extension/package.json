@@ -1,0 +1,14 @@
+{
+  "name": "synonym-extension",
+  "displayName": "Word Hints",
+  "description": "Zeigt beim Hovern Synonyme aus words.json an (z.B. height <-> row).",
+  "version": "0.0.1",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ]
+}

@@ -8,6 +8,9 @@ from commodore.components.vga.vga import VGA
 from commodore.tables.character_rom import CharacterRom
 from commodore.tables.input_handler import InputHandler
 
+MATRIX_WIDTH = 40
+MATRIX_HEIGHT = 25
+
 
 class MainEngine(Engine):
     def __init__(self, name: str):
@@ -16,8 +19,8 @@ class MainEngine(Engine):
         self.key_code = self.define_input('KEY_CODE', 8)
         self.key_valid = self.define_input('KEY_VALID', 1)
 
-        self.char_memory = CharacterMemory(self)
-        self.cursor = Cursor(self)
+        self.char_memory = CharacterMemory(self, MATRIX_WIDTH, MATRIX_HEIGHT)
+        self.cursor = Cursor(self, MATRIX_WIDTH, MATRIX_HEIGHT)
         self.char_rom = CharacterRom(self)
         self.text_gpu = TextGPU(self, self.char_memory, self.char_rom)
         self.input_handler = InputHandler(self)

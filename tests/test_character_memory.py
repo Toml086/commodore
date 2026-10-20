@@ -10,7 +10,7 @@ class CharMemoryTestBase(NoRTLTestBase[Engine]):
     def init_sequence(self) -> Engine:
         engine = Engine('my_engine')
 
-        self.char_memory = CharacterMemory(engine, character_bit_width=6, width=40, height=25)
+        self.char_memory = CharacterMemory(engine, 40, 25)
         self.data_source = engine.define_local('data_source', 6, 0)
 
         return engine
@@ -49,15 +49,15 @@ class TestIndexOutOfBoundError(CharMemoryTestBase):
 
 class TestFillAndReadAllFields(CharMemoryTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        for row in range(25):
-            for col in range(40):
+        for row in range(self.char_memory.height):
+            for col in range(self.char_memory.width):
                 target_value = (row + col) % 64
                 dynamic_signal = engine.define_local(f'dyn_sig_{row}_{col}', 6, reset_value=target_value)
 
                 self.char_memory.write(row, col, dynamic_signal)
 
-        for row in range(25):
-            for col in range(40):
+        for row in range(self.char_memory.height):
+            for col in range(self.char_memory.width):
                 expected_value = (row + col) % 64
 
                 read_signal = self.char_memory.read(row, col)

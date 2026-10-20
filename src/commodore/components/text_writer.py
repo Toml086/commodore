@@ -10,13 +10,7 @@ KEY_DELETE = 0x7F
 
 
 class TextWriter:
-    def __init__(
-        self,
-        engine: Engine,
-        cursor: Cursor,
-        character_memory: CharacterMemory,
-        input_handler: InputHandler,
-    ) -> None:
+    def __init__(self, engine: Engine, cursor: Cursor, character_memory: CharacterMemory, input_handler: InputHandler) -> None:
         self.engine = engine
         self.cursor = cursor
         self.character_memory = character_memory

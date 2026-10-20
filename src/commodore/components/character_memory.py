@@ -4,8 +4,10 @@ from nortl.core.protocols import Renderable
 
 
 class CharacterMemory:
-    def __init__(self, engine: Engine, character_bit_width: int = 6, width: int = 40, height: int = 25):
+    def __init__(self, engine: Engine, width: int, height: int, character_bit_width: int = 6):
         self.engine = engine
+        self.width = width
+        self.height = height
         self.character_bit_width = character_bit_width
         self.matrix: list[list[Volatile[Signal]]] = [
             [Volatile(self.engine.define_local(f'memory_{y:02}_{x:02}', character_bit_width, reset_value=0)) for x in range(width)]
