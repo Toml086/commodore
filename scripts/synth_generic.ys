@@ -1,3 +1,3 @@
 read_verilog -sv ../notebooks/build/Commodore.sv
 synth
-write_verilog synth.v
+write_verilog -noattr synth.v
