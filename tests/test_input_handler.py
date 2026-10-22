@@ -1,7 +1,7 @@
 from nortl import Engine
 from nortl.utils.test_wrapper import NoRTLTestBase
 
-from commodore.components.tables.input_handler import InputHandler
+from components.tables.input_handler import InputHandler
 
 # test for input handler and units of text_writer
 
