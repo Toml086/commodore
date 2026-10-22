@@ -1,0 +1,21 @@
+# Commodore on the Olimex GateMate EVB
+# and the 4x2 key matrix. Net names are the ports of commodore_wrapper.
+
+Pin_in  "CLK_I"        Loc = "IO_SB_A8" | SCHMITT_TRIGGER=true;  # 10 MHz osc
+Pin_in  "RSTN_ASYNC_I" Loc = "IO_SB_B7" | SCHMITT_TRIGGER=true;  # ~RESET
+
+Pin_out "KEY_CODE[0]"     Loc = "IO_EB_A6";
+Pin_out "KEY_CODE[1]"     Loc = "IO_EB_B6";
+Pin_out "KEY_CODE[2]"     Loc = "IO_EB_A5";
+Pin_out "KEY_CODE[3]"     Loc = "IO_EB_B5";
+Pin_out "KEY_CODE[4]"     Loc = "IO_EB_A4";
+Pin_out "KEY_CODE[5]"     Loc = "IO_EB_B4";
+Pin_out "KEY_CODE[6]"     Loc = "IO_EB_A3";
+Pin_out "KEY_CODE[7]"     Loc = "IO_EB_B3";
+
+Pin_out "KEY_VALID"       Loc = "IO_EB_B7";
+Pin_out "red"             Loc = "IO_EB_A7";
+Pin_out "green"           Loc = "IO_EB_B8";
+Pin_out "blue"            Loc = "IO_EB_A2";
+Pin_out "vsync"           Loc = "IO_EB_B2";
+Pin_out "hsync"           Loc = "IO_EB_A8";

@@ -20,5 +20,12 @@
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
     "mypy-type-checker.importStrategy": "fromEnvironment",
-    "python-envs.defaultEnvManager": "ms-python.python:venv"
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "folder-path-color.folders": [
+        {"path": "src/commodore", "color": "magenta"},
+        {"path": "tests", "color": "yellow"},
+        {"path": "notebooks", "color": "red"}
+
+
+    ]
 }

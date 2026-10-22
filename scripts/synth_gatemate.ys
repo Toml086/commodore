@@ -1,0 +1,3 @@
+read_verilog -sv ../notebooks/build/Commodore.sv ../scripts/commodore_wrapper.sv
+synth_gatemate -top commodore_wrapper -luttree -nomx8
+write_json net.json

@@ -3,7 +3,7 @@ from nortl.core import Signal
 
 from commodore.components.character_memory import CharacterMemory
 from commodore.components.cursor import Cursor
-from commodore.tables.input_handler import InputHandler
+from commodore.components.tables.input_handler import InputHandler
 
 KEY_BACKSPACE = 0x08
 KEY_DELETE = 0x7F

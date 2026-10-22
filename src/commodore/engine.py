@@ -2,11 +2,11 @@ from nortl import Const, Engine
 
 from commodore.components.character_memory import CharacterMemory
 from commodore.components.cursor import Cursor
+from commodore.components.tables.character_rom import CharacterRom
+from commodore.components.tables.input_handler import InputHandler
 from commodore.components.text_gpu import TextGPU
 from commodore.components.text_writer import TextWriter
 from commodore.components.vga.vga import VGA
-from commodore.tables.character_rom import CharacterRom
-from commodore.tables.input_handler import InputHandler
 
 MATRIX_WIDTH = 4
 MATRIX_HEIGHT = 2

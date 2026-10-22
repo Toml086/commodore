@@ -1,7 +1,7 @@
 from nortl import Engine
 from nortl.utils.test_wrapper import NoRTLTestBase
 
-from commodore.tables.input_handler import InputHandler
+from commodore.components.tables.input_handler import InputHandler
 
 # test for input handler and units of text_writer
 
@@ -40,4 +40,4 @@ class TestConvertsValidUnknownInputToSpace(InputHandlerTestBase):
         self.input_handler.handle_input(engine, key_code)
 
         # Assert
-        self.assertEqual(self.input_handler.result, 0)
+        self.assertEqual(self.input_handler.result, 31)

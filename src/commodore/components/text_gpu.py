@@ -2,8 +2,8 @@ from nortl import All, Const, Engine, IfThenElse
 from nortl.core.protocols import Renderable
 
 from commodore.components.character_memory import CharacterMemory
+from commodore.components.tables.character_rom import CharacterRom
 from commodore.components.vga.objects import GraphicsObject
-from commodore.tables.character_rom import CharacterRom
 
 
 class TextGPU(GraphicsObject):
