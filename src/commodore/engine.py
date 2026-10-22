@@ -8,8 +8,8 @@ from commodore.components.vga.vga import VGA
 from commodore.tables.character_rom import CharacterRom
 from commodore.tables.input_handler import InputHandler
 
-MATRIX_WIDTH = 40
-MATRIX_HEIGHT = 25
+MATRIX_WIDTH = 4
+MATRIX_HEIGHT = 2
 
 
 class MainEngine(Engine):
