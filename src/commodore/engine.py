@@ -9,8 +9,10 @@ from commodore.components.text_writer import TextWriter
 from commodore.components.uart.uart import UART
 from commodore.components.vga.vga import VGA
 
+# FIXME
 MATRIX_WIDTH = 4
 MATRIX_HEIGHT = 2
+# FIXME
 
 
 class MainEngine(Engine):

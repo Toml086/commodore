@@ -1,7 +1,7 @@
 from typing import Union
 
 from nortl import Engine, to_renderable
-from nortl.core.protocols import Renderable
+from nortl.core.protocols import OperationTraitProto, Renderable
 
 from commodore.components.uart.uart_timing import wait_ticks
 
@@ -17,7 +17,7 @@ class DataSender:
         self.engine.set(self.output, 1)
         self.engine.sync()
 
-    def bit(self, value) -> None:
+    def bit(self, value: OperationTraitProto | int) -> None:
         self.engine.set(self.output, value)
         wait_ticks(self.engine, self.counter, self.bit_ticks)
 

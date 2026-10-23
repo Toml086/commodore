@@ -23,6 +23,7 @@
     "python-envs.defaultEnvManager": "ms-python.python:venv",
     "folder-path-color.folders": [
         {"path": "src/commodore", "color": "magenta"},
+        {"path": "src/input", "color": "cyan"}
         {"path": "tests", "color": "yellow"},
         {"path": "notebooks", "color": "red"}
 

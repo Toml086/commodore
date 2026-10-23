@@ -211,7 +211,8 @@ output logic red,
 output logic green,
 output logic blue,
 output logic vsync,
-output logic hsync);
+output logic hsync,
+input logic BIT_INPUT);
 logic [5:0] memory_00_00;
 logic [5:0] memory_00_01;
 logic [5:0] memory_00_02;
@@ -226,7 +227,6 @@ logic [5:0] input_code;
 logic [9:0] counter_v;
 logic [9:0] counter_h;
 logic stop_vga;
-logic BIT_INPUT;
 logic [15:0] RX_COUNTER;
 logic [3:0] RX_BIT_IDX;
 logic [7:0] RX_SHIFT;
