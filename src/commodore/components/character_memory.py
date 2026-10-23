@@ -1,4 +1,4 @@
-from nortl import Const, Engine, IfThenElse, Volatile
+from nortl import Const, Engine, IfThenElse, Segment, Volatile
 from nortl.core import Signal
 from nortl.core.protocols import Renderable
 
@@ -43,6 +43,7 @@ class CharacterMemory:
             result = IfThenElse(row == y, line_val, result)
         return result
 
+    @Segment
     def clear_all(self) -> None:
         for line in self.matrix:
             for cell in line:

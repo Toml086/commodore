@@ -27,5 +27,40 @@
         {"path": "notebooks", "color": "red"}
 
 
-    ]
+    ],
+    "customFileOrder.rules": {
+        ".": {
+            "order": [
+                "notebooks",
+                "src",
+                "tests",
+                "run",
+                "scripts",
+                "website_code",
+                "tools",
+                ".vscode",
+                "stubs",
+                ".gitattributes",
+                ".gitignore",
+                "commodore.sv",
+                "LICENSE",
+                "pyproject.toml",
+                "README.md",
+                "tox.ini",
+                "uv.lock"
+            ]
+        },
+        "src/components": {
+            "order": [
+                "__pycache__",
+                "tables",
+                "vga",
+                "character_memory.py",
+                "cursor.py",
+                "text_gpu.py",
+                "text_writer.py",
+                "py.typed"
+            ]
+        }
+    }
 }
