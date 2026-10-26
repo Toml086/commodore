@@ -205,7 +205,7 @@ end
 endmodule
 
 
-module input  (input logic CLK_I,
+module input_device  (input logic CLK_I,
 input logic RST_ASYNC_I,
 output logic BIT_OUTPUT,
 input logic [7:0] KEY_CODE,
@@ -311,7 +311,7 @@ always_ff @(posedge CLK_I or posedge RST_ASYNC_I)
 begin
    if (RST_ASYNC_I)
    begin
-      BIT_OUTPUT <= 0;
+      BIT_OUTPUT <= 1;
       TX_COUNTER <= 0;
       LOCAL_INPUT <= 0;
       RETURN_ADDRESS <= 0;
@@ -321,7 +321,7 @@ begin
    begin
         case (state_nxt)
          IDLE: begin
-            BIT_OUTPUT <= 0;
+            BIT_OUTPUT <= 1;
             TX_COUNTER <= 0;
             LOCAL_INPUT <= 0;
             RETURN_ADDRESS <= 0;

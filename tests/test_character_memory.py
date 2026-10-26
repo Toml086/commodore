@@ -1,7 +1,7 @@
 from nortl import Engine
 from nortl.utils.test_wrapper import NoRTLTestBase
 
-from components.character_memory import CharacterMemory
+from commodore.components.character_memory import CharacterMemory
 
 # test for char memory and units of text_writer
 

@@ -10,8 +10,8 @@ from commodore.components.uart.uart import UART
 from commodore.components.vga.vga import VGA
 
 # FIXME
-MATRIX_WIDTH = 4
-MATRIX_HEIGHT = 2
+MATRIX_WIDTH = 40
+MATRIX_HEIGHT = 25
 # FIXME
 
 
@@ -26,7 +26,8 @@ class MainEngine(Engine):
         self.input_handler = InputHandler(self)
         self.text_writer = TextWriter(self, self.cursor, self.char_memory, self.input_handler)
         self.vga = VGA(self, self.text_gpu)
-        self.uart = UART(self, self.text_writer)
+        self.signal = self.define_input('UART_RX', 1)
+        self.uart = UART(self, self.text_writer, self.signal)
 
     def build(self) -> None:
         self.sync()

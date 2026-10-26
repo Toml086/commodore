@@ -10,7 +10,7 @@ class DataSender:
     def __init__(self, engine: Engine, bit_ticks: int = 64):
         self.engine = engine
         self.bit_ticks = bit_ticks
-        self.output = engine.define_output('BIT_OUTPUT', width=1)
+        self.output = engine.define_output('BIT_OUTPUT', width=1, reset_value=1)
         self.counter = engine.define_local('TX_COUNTER', 16, 0)
 
     def idle(self) -> None:

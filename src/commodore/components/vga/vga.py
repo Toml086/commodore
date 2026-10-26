@@ -1,6 +1,6 @@
 from nortl import All, Const, Engine, IfThenElse
 
-from .objects import GraphicsObject
+from commodore.components.vga.objects import GraphicsObject
 
 H_VISIBLE_AREA = 640
 H_FRONT_PORCH = 16

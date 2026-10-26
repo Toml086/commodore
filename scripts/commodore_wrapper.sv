@@ -20,16 +20,26 @@ always_ff @(posedge CLK_I, negedge RSTN_ASYNC_I) begin
     end
 end
 
-commodore I_CORE (
+logic uart_line;
+
+input_device I_INPUT (
   .CLK_I(clk_6m),
-  .RST_ASYNC_I(~RSTN_ASYNC_I),      // Flip reset polarity
+  .RST_ASYNC_I(~RSTN_ASYNC_I),
   .KEY_CODE(KEY_CODE),
   .KEY_VALID(KEY_VALID),
+  .BIT_OUTPUT(uart_line)
+);
+
+commodore I_CORE (
+  .CLK_I(clk_6m),
+  .RST_ASYNC_I(~RSTN_ASYNC_I),
+  .UART_RX(uart_line),
   .red(red),
   .green(green),
   .blue(blue),
   .vsync(vsync),
-  .hsync(hsync),
+  .hsync(hsync)
 );
+
 
 endmodule

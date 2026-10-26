@@ -1,3 +1,5 @@
-read_verilog -sv ../notebooks/build/Commodore.sv ../scripts/commodore_wrapper.sv
+read_verilog -sv ../notebooks/commodore/build/commodore.sv
+read_verilog -sv -overwrite ../notebooks/input_engine/build/input_device.sv
+read_verilog -sv ../scripts/commodore_wrapper.sv
 synth_gatemate -top commodore_wrapper -luttree -nomx8
 write_json net.json

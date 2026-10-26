@@ -10,7 +10,7 @@ class DataReader:
         self.bit_ticks = bit_ticks
         self.start_offset = start_offset
 
-        self.input = engine.define_input('BIT_INPUT', 1)
+        self.input = engine.define_local('BIT_INPUT', 1)
         self.counter = engine.define_local('RX_COUNTER', 16, 0)
         self.bit_idx = engine.define_local('RX_BIT_IDX', 4, 0)
         self.shift = engine.define_local('RX_SHIFT', 8, 0)

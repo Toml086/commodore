@@ -23,10 +23,10 @@ class InputEngine(Engine):
             self.sync()
             self.data_sender.send_data(self, self.input_local)
 
-        with open('Input.sv', 'w') as fptr:
+        with open('Input_device.sv', 'w') as fptr:
             fptr.write(self.to_verilog())
 
 
 if __name__ == '__main__':
-    engine = InputEngine('input')
+    engine = InputEngine('input_device')
     engine.build()
