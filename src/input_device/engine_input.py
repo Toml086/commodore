@@ -1,6 +1,5 @@
 from nortl import Const, Engine
 
-from input_device.components.data_input import DataInput
 from input_device.uart.data_sender import DataSender
 
 
@@ -8,7 +7,6 @@ class InputEngine(Engine):
     def __init__(self, name: str):
         super().__init__(name)
         self.data_sender = DataSender(self)
-        self.data_input = DataInput(self, self.data_sender)
 
         self.key_code = self.define_input('KEY_CODE', 8)
         self.key_valid = self.define_input('KEY_VALID', 1)
@@ -25,7 +23,7 @@ class InputEngine(Engine):
             self.sync()
             self.data_sender.send_data(self, self.input_local)
 
-        with open('Input.svw') as fptr:
+        with open('Input.sv', 'w') as fptr:
             fptr.write(self.to_verilog())
 
 

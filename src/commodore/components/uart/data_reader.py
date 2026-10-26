@@ -16,7 +16,8 @@ class DataReader:
         self.shift = engine.define_local('RX_SHIFT', 8, 0)
         self.byte = engine.define_local('RX_BYTE', 8, 0)
 
-    def read_data(self) -> Signal:
+    def read_data(self, input_signal: Signal) -> Signal:
+        self.engine.set(self.input, input_signal)
         self.engine.wait_for(self.input.falling())  # startbit
         wait_ticks(self.engine, self.counter, self.bit_ticks + self.bit_ticks // 2 - self.start_offset)
 
