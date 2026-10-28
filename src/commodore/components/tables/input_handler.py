@@ -68,7 +68,7 @@ class InputHandler:
             ']': 61,
         }
 
-        table = [self.convert.get(chr(code), 31) for code in range(256)]  # range???? -> keyboard -> 8bit; task -> 6bit
+        table = [self.convert.get(chr(code), 31) for code in range(256)]
         self.lookup = LookupTable(table, default=31)
 
         self.result: Signal = engine.define_local('input_code', 6, 0)
