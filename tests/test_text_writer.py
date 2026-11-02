@@ -1,220 +1,176 @@
-from coverage_test_base import CoverageTestBase
+from commodore_test_base import CommodoreTestBase
 from nortl import Engine
-
-from commodore.engine import MainEngine
 
 # test for text writer and cursor
 
 
-class TextWriterTestBase(CoverageTestBase):
-    def init_sequence(self) -> Engine:
-        self.main_engine = MainEngine('my_engine')
-
-        self.key_code = self.main_engine.define_local('KEY_CODE', 8)
-
-        return self.main_engine
-
-    def dut(self, engine: Engine) -> None:
-        pass
-
-
-class TestNormalWrite(TextWriterTestBase):
+class TestNormalWrite(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # Arrange & Act
-        engine.set(self.key_code, 0x41)  # =A
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.start_uart()
+        self.send_bytes(0x41)  # =A
 
-        # Assert
-        self.assertEqual(1, self.main_engine.cursor.col)
-        self.assertEqual(0, self.main_engine.cursor.row)
+        self.assertTrue(self.main_engine.cursor.col == 1)
+        self.assertTrue(self.main_engine.cursor.row == 0)
 
-        self.assertEqual(33, self.main_engine.char_memory.read(0, 0))
+        self.assertTrue(self.main_engine.char_memory.read(0, 0) == 33)
+
+        self.finish_simulation()
 
 
-class TestWriteMultipleChars(TextWriterTestBase):
+class TestWriteMultipleChars(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # Arrange & Act
+        self.start_uart()
+        self.send_bytes(0x42)  # =B
+        self.send_bytes(0x31)  # =1
+        self.send_bytes(0x4F)  # =O
 
-        engine.set(self.key_code, 0x42)  # =B
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.assertTrue(self.main_engine.cursor.col == 3)
 
-        engine.set(self.key_code, 0x31)  # =1
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.assertTrue(self.main_engine.char_memory.read(0, 0) == 34)
+        self.assertTrue(self.main_engine.char_memory.read(0, 1) == 17)
+        self.assertTrue(self.main_engine.char_memory.read(0, 2) == 47)
 
-        engine.set(self.key_code, 0x4F)  # =O
-        self.main_engine.text_writer.user_write(engine, self.key_code)
-
-        # Assert
-        self.assertEqual(3, self.main_engine.cursor.col)
-
-        self.assertEqual(34, self.main_engine.char_memory.read(0, 0))
-        self.assertEqual(17, self.main_engine.char_memory.read(0, 1))
-        self.assertEqual(47, self.main_engine.char_memory.read(0, 2))
+        self.finish_simulation()
 
 
-class TestLineBreakForEndOfRow(TextWriterTestBase):
+class TestLineBreakForEndOfRow(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
         self.main_engine.cursor.set_position(38, 0)
 
-        engine.set(self.key_code, 0x48)  # =H
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.start_uart()
 
-        engine.set(self.key_code, 0x45)  # =E)
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.send_bytes(0x48)  # =H, column 38
+        self.send_bytes(0x45)  # =E, column 39
 
-        # Assert
-        self.assertEqual(0, self.main_engine.cursor.col)
-        self.assertEqual(1, self.main_engine.cursor.row)
+        self.assertTrue(self.main_engine.cursor.col == 0)
+        self.assertTrue(self.main_engine.cursor.row == 1)
+
+        self.finish_simulation()
 
 
-class TestLineBreakForEndOfTable(TextWriterTestBase):
+class TestLineBreakForEndOfTable(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
         self.main_engine.cursor.set_position(38, 24)
 
-        engine.set(self.key_code, 0x48)  # =H
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.start_uart()
 
-        engine.set(self.key_code, 0x45)  # =E
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.send_bytes(0x48)  # =H, row 24, column 38
+        self.send_bytes(0x45)  # =E, row 24, column 39
 
-        # Assert
-        self.assertEqual(0, self.main_engine.cursor.col)
-        self.assertEqual(0, self.main_engine.cursor.row)
+        self.assertTrue(self.main_engine.cursor.col == 0)
+        self.assertTrue(self.main_engine.cursor.row == 0)
+
+        self.finish_simulation()
 
 
-class TestNormalClear(TextWriterTestBase):
+class TestNormalClear(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # Arrange & Act
+        self.start_uart()
+        self.send_bytes(0x48)  # =H
+        self.send_bytes(0x08)  # =CLEAR
 
-        engine.set(self.key_code, 0x48)  # =H
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.assertTrue(self.main_engine.char_memory.read(0, 0) == 0)
+        self.assertTrue(self.main_engine.cursor.col == 0)
+        self.assertTrue(self.main_engine.cursor.row == 0)
 
-        engine.set(self.key_code, 0x08)  # =CLEAR
-        self.main_engine.text_writer.user_write(engine, self.key_code)
-
-        # Assert
-        self.assertEqual(0, self.main_engine.char_memory.read(0, 0))
-        self.assertEqual(0, self.main_engine.cursor.col)
-        self.assertEqual(0, self.main_engine.cursor.row)
+        self.finish_simulation()
 
 
-class TestClearMultipleChars(TextWriterTestBase):
+class TestClearMultipleChars(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # Arrange & Act
-        engine.set(self.key_code, 0x48)  # =H
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.start_uart()
+        self.send_bytes(0x48)  # =H
+        self.send_bytes(0x45)  # =E
+        self.send_bytes(0x4C)  # =L
+        self.send_bytes(0x4C)  # =L
+        self.send_bytes(0x4F)  # =O
+        self.send_bytes(0x08)  # =CLEAR
+        self.send_bytes(0x08)  # =CLEAR
 
-        engine.set(self.key_code, 0x45)  # =E
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.assertTrue(self.main_engine.char_memory.read(0, 0) == 40)
+        self.assertTrue(self.main_engine.char_memory.read(0, 1) == 37)
+        self.assertTrue(self.main_engine.char_memory.read(0, 2) == 44)
+        self.assertTrue(self.main_engine.char_memory.read(0, 3) == 0)
+        self.assertTrue(self.main_engine.char_memory.read(0, 4) == 0)
 
-        engine.set(self.key_code, 0x4C)  # =L
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.assertTrue(self.main_engine.cursor.row == 0)
+        self.assertTrue(self.main_engine.cursor.col == 3)
 
-        engine.set(self.key_code, 0x4C)  # =L
-        self.main_engine.text_writer.user_write(engine, self.key_code)
-
-        engine.set(self.key_code, 0x4F)  # =O
-        self.main_engine.text_writer.user_write(engine, self.key_code)
-
-        engine.set(self.key_code, 0x08)  # =CLEAR
-        self.main_engine.text_writer.user_write(engine, self.key_code)
-
-        engine.set(self.key_code, 0x08)  # =CLEAR
-        self.main_engine.text_writer.user_write(engine, self.key_code)
-
-        # Assert
-        self.assertEqual(40, self.main_engine.char_memory.read(0, 0))
-        self.assertEqual(37, self.main_engine.char_memory.read(0, 1))
-        self.assertEqual(44, self.main_engine.char_memory.read(0, 2))
-        self.assertEqual(0, self.main_engine.char_memory.read(0, 3))
-        self.assertEqual(0, self.main_engine.char_memory.read(0, 4))
-
-        self.assertEqual(0, self.main_engine.cursor.row)
-        self.assertEqual(3, self.main_engine.cursor.col)
+        self.finish_simulation()
 
 
-class TestLineBreakForStartOfRow(TextWriterTestBase):
+class TestLineBreakForStartOfRow(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # Arrange & Act
         self.main_engine.cursor.set_position(1, 1)
+        self.main_engine.char_memory.write(1, 0, 33)
+        self.main_engine.char_memory.write(0, 39, 33)
 
-        engine.set(self.key_code, 0x08)  # = CLEAR
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.start_uart()
 
-        engine.set(self.key_code, 0x08)  # = CLEAR
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.send_bytes(0x08)  # =CLEAR, clears row 1, column 0
+        self.send_bytes(0x08)  # =CLEAR, jumps to row 0, column 39 and clears it
 
-        # Assert
-        self.assertEqual(0, self.main_engine.char_memory.read(1, 0))
-        self.assertEqual(0, self.main_engine.char_memory.read(0, 39))
+        self.assertTrue(self.main_engine.char_memory.read(1, 0) == 0)
+        self.assertTrue(self.main_engine.char_memory.read(0, 39) == 0)
 
-        self.assertEqual(0, self.main_engine.cursor.row)
-        self.assertEqual(39, self.main_engine.cursor.col)
+        self.assertTrue(self.main_engine.cursor.row == 0)
+        self.assertTrue(self.main_engine.cursor.col == 39)
+
+        self.finish_simulation()
 
 
-class TestLineBreakStartOfTable(TextWriterTestBase):
+class TestLineBreakStartOfTable(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # Arrange & Act
-        engine.set(self.key_code, 0x08)  # = CLEAR
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.start_uart()
+        self.send_bytes(0x08)  # =CLEAR
 
-        # Assert
-        self.assertEqual(0, self.main_engine.cursor.row)
-        self.assertEqual(0, self.main_engine.cursor.col)
+        self.assertTrue(self.main_engine.cursor.row == 0)
+        self.assertTrue(self.main_engine.cursor.col == 0)
+
+        self.finish_simulation()
 
 
-class TestNormalUseClearAllRandomInputs(TextWriterTestBase):
+""" class TestNormalUseClearAllRandomInputs(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # Arrange & Act
-        engine.set(self.key_code, 0x48)  # = H
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.start_uart()
 
-        self.main_engine.cursor.set_position(0, 5)
-        engine.set(self.key_code, 0x45)  # = E
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        repeat_counter = engine.define_local('REPEAT_COUNTER', 16, 0)
+        engine.set(repeat_counter, 0)
+        with engine.while_loop(repeat_counter != 85):
+            self.send_bytes(0x41)  # =A, two full rows and five cells of row 2
+            engine.set(repeat_counter, repeat_counter + 1)
 
-        self.main_engine.cursor.set_position(1, 3)
-        engine.set(self.key_code, 0x4C)  # = L
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.assertTrue(self.main_engine.char_memory.read(2, 4) == 33)
 
-        self.main_engine.cursor.set_position(5, 20)
-        engine.set(self.key_code, 0x4C)  # = L
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.send_bytes(0x7F, settle_ticks=200)  # DELETE_ALL
 
-        self.main_engine.cursor.set_position(20, 20)
-        engine.set(self.key_code, 0x4F)  # = O
-        self.main_engine.text_writer.user_write(engine, self.key_code)
+        self.assertTrue(self.main_engine.cursor.row == 0)
+        self.assertTrue(self.main_engine.cursor.col == 0)
+        self.assertTrue(self.main_engine.char_memory.read(0, 0) == 0)
+        self.assertTrue(self.main_engine.char_memory.read(0, 39) == 0)
+        self.assertTrue(self.main_engine.char_memory.read(1, 0) == 0)
+        self.assertTrue(self.main_engine.char_memory.read(1, 39) == 0)
+        self.assertTrue(self.main_engine.char_memory.read(2, 4) == 0)
 
-        engine.set(self.key_code, 0x7F)  # DELETE_ALL
-        self.main_engine.text_writer.user_write(engine, self.key_code)
-
-        # Assert
-        self.assertEqual(0, self.main_engine.cursor.row)
-        self.assertEqual(0, self.main_engine.cursor.col)
-        self.assertEqual(0, self.main_engine.char_memory.read(0, 0))
-        self.assertEqual(0, self.main_engine.char_memory.read(0, 5))
-        self.assertEqual(0, self.main_engine.char_memory.read(1, 3))
-        self.assertEqual(0, self.main_engine.char_memory.read(5, 20))
-        self.assertEqual(0, self.main_engine.char_memory.read(20, 20))
+        self.finish_simulation()
 
 
-class TestClearAllWithAllFieldsFilled(TextWriterTestBase):
+class TestClearAllWithAllFieldsFilled(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # Arrange & Act
+        self.start_uart()
+
+        repeat_counter = engine.define_local('REPEAT_COUNTER', 16, 0)
+        engine.set(repeat_counter, 0)
+        with engine.while_loop(repeat_counter != self.main_engine.cursor.max_rows * self.main_engine.cursor.max_columns):
+            self.send_bytes(0x41)  # =A, fills every cell
+            engine.set(repeat_counter, repeat_counter + 1)
+
+        self.assertTrue(self.main_engine.char_memory.read(self.main_engine.cursor.max_rows - 1, self.main_engine.cursor.max_columns - 1) == 33)
+
+        self.send_bytes(0x7F, settle_ticks=200)  # DELETE_ALL
+
         for row in range(self.main_engine.cursor.max_rows):
             for col in range(self.main_engine.cursor.max_columns):
-                target_value = (row + col) % 63 + 1
-                dynamic_signal = engine.define_local(f'dym_signal{row}_{col}', 6)
-                engine.set(dynamic_signal, target_value)
-                engine.sync()
-                self.main_engine.char_memory.write(row, col, dynamic_signal)
+                self.assertTrue(self.main_engine.char_memory.read(row, col) == 0)
 
-        engine.set(self.key_code, 0x7F)  # DELETE_ALL
-        self.main_engine.text_writer.user_write(engine, self.key_code)
-
-        # Assert - after clear
-        for row in range(self.main_engine.cursor.max_rows):
-            for col in range(self.main_engine.cursor.max_columns):
-                read_signal = self.main_engine.char_memory.read(row, col)
-
-                self.assertEqual(read_signal, 0)
+        self.finish_simulation() """

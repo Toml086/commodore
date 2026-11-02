@@ -1,43 +1,28 @@
-from coverage_test_base import CoverageTestBase
+from commodore_test_base import CommodoreTestBase
 from nortl import Engine
-from nortl.utils.test_wrapper import NoRTLTestBase
-
-from commodore.engine import MainEngine
 
 # test for input handler and units of text_writer
 
 
-class InputHandlerTestBase(CoverageTestBase):
-    def init_sequence(self) -> Engine:
-        self.main_engine = MainEngine('my_engine')
-
-        self.data_source = self.main_engine.define_local('LOCAL', 6, 0)
-
-        return self.main_engine
-
-    def dut(self, engine: Engine) -> None:
-        pass
-
-
-class TestConvertsValidInputToValidSignal(InputHandlerTestBase):
+class TestConvertsValidInputToValidSignal(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
-        user_input = 0x41  # =A
-        key_code = engine.define_local('KEY_CODE', 8)
-        engine.set(key_code, user_input)
-        self.main_engine.input_handler.handle_input(engine, key_code)
+        self.start_uart()
+        self.send_bytes(0x41)  # =A
 
         # Assert
-        self.assertEqual(self.main_engine.input_handler.result, 33)
+        self.assertTrue(self.main_engine.char_memory.read(0, 0) == 33)
+
+        self.finish_simulation()
 
 
-class TestConvertsValidUnknownInputToSpace(InputHandlerTestBase):
+class TestConvertsValidUnknownInputToSpace(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
-        user_input = 0xC4  # =Ä
-        key_code = engine.define_local('KEY_CODE', 8)
-        engine.set(key_code, user_input)
-        self.main_engine.input_handler.handle_input(engine, key_code)
+        self.start_uart()
+        self.send_bytes(0xC4)  # =Ä
 
         # Assert
-        self.assertEqual(self.main_engine.input_handler.result, 31)
+        self.assertTrue(self.main_engine.char_memory.read(0, 0) == 31)
+
+        self.finish_simulation()

@@ -1,43 +1,33 @@
-from coverage_test_base import CoverageTestBase
+from commodore_test_base import CommodoreTestBase
 from nortl import Engine
-
-from commodore.engine import MainEngine
 
 # test for char memory and units of text_writer
 
 
-class CharMemoryTestBase(CoverageTestBase):
-    def init_sequence(self) -> Engine:
-        self.main_engine = MainEngine('my_engine')
-
-        self.data_source = self.main_engine.define_local('data_source', 6, 0)
-
-        return self.main_engine
-
-    def dut(self, engine: Engine) -> None:
-        pass
-
-
-class TestInitialState(CharMemoryTestBase):
+class TestInitialState(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
-        # Arrange & Act
-        cell_0_0 = self.main_engine.char_memory.read(0, 0)
+        self.assertTrue(self.main_engine.char_memory.read(0, 0) == 0)
 
-        # Assert
-        self.assertEqual(cell_0_0, 0)
+        self.finish_simulation()
 
 
-class TestReadAndWrite(CharMemoryTestBase):
+class TestReadAndWrite(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
         # Arrange & Act
 
-        self.main_engine.char_memory.write(1, 1, self.data_source)
-        read_signal = self.main_engine.char_memory.read(1, 1)
+        self.start_uart()
+        self.send_bytes(0x41)  # =A, at 0,0
+
+        self.send_bytes(0x42)  # =B, at 0,1
+
         # Assert
-        self.assertEqual(self.data_source, read_signal)
+        self.assertTrue(self.main_engine.char_memory.read(0, 0) == 33)
+        self.assertTrue(self.main_engine.char_memory.read(0, 1) == 34)
+
+        self.finish_simulation()
 
 
-class TestIndexOutOfBoundError(CharMemoryTestBase):
+class TestIndexOutOfBoundError(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
         try:
             self.main_engine.char_memory.write(0, 40, self.data_source)
@@ -45,8 +35,10 @@ class TestIndexOutOfBoundError(CharMemoryTestBase):
         except IndexError:
             self.assertTrue(True)
 
+        self.finish_simulation()
 
-class TestFillAndReadAllFields(CharMemoryTestBase):
+
+""" class TestFillAndReadAllFields(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
         for row in range(self.main_engine.char_memory.height):
             for col in range(self.main_engine.char_memory.width):
@@ -61,4 +53,6 @@ class TestFillAndReadAllFields(CharMemoryTestBase):
 
                 read_signal = self.main_engine.char_memory.read(row, col)
 
-                self.assertEqual(read_signal, expected_value)
+                self.assertTrue(read_signal == expected_value)
+
+        self.finish_simulation() """

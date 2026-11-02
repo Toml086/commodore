@@ -205,16 +205,14 @@ end
 endmodule
 
 
-module my_engine  (input logic CLK_I,
+module Commodore  (input logic CLK_I,
 input logic RST_ASYNC_I,
 output logic red,
 output logic green,
 output logic blue,
 output logic vsync,
 output logic hsync,
-output logic finish,
-output logic passed,
-output logic timeout);
+input logic UART_RX);
 logic [5:0] memory_00_00;
 logic [5:0] memory_00_01;
 logic [5:0] memory_00_02;
@@ -1221,32 +1219,22 @@ logic [5:0] input_code;
 logic [9:0] counter_v;
 logic [9:0] counter_h;
 logic stop_vga;
-logic UART_RX;
 logic BIT_INPUT;
 logic [15:0] RX_COUNTER;
 logic [3:0] RX_BIT_IDX;
 logic [7:0] RX_SHIFT;
 logic [7:0] RX_BYTE;
-logic [7:0] KEY_CODE;
-logic [15:0] error_ctr;
-logic [15:0] timeout_ctr;
-logic reset_timeout;
 logic WORKER_1_reset;
 logic WORKER_1_start;
 logic [1-1:0] WORKER_1_select;
 logic WORKER_1_idle;
-logic WORKER_2_reset;
-logic WORKER_2_start;
-logic [1-1:0] WORKER_2_select;
-logic WORKER_2_idle;
 logic EVENT_BIT_INPUT_rising;
 logic EVENT_BIT_INPUT_falling;
-logic [1-1:0] WORKER_1_RETURN_ADDRESS;
-logic [1-1:0] WORKER_1_BACKUP_ADDRESS_ZONE1;
-logic [1-1:0] WORKER_1_BACKUP_ADDRESS_ZONE2;
-enum {IDLE, STATE_1} state, state_nxt;
-enum {WORKER_1_IDLE, WORKER_1_STATE_1, WORKER_1_STATE_2, WORKER_1_STATE_3, WORKER_1_STATE_4, WORKER_1_STATE_5, WORKER_1_STATE_6, WORKER_1_STATE_7, WORKER_1_STATE_8, WORKER_1_STATE_9, WORKER_1_STATE_10, WORKER_1_STATE_11, WORKER_1_STATE_12, WORKER_1_STATE_13, WORKER_1_STATE_14, WORKER_1_STATE_15, WORKER_1_STATE_16, WORKER_1_STATE_17, WORKER_1_STATE_18, WORKER_1_STATE_19, WORKER_1_STATE_20, WORKER_1_STATE_21, WORKER_1_STATE_22, WORKER_1_STATE_23, WORKER_1_STATE_24, WORKER_1_STATE_25, WORKER_1_STATE_26, WORKER_1_STATE_27, WORKER_1_STATE_28, WORKER_1_STATE_29, WORKER_1_STATE_30, WORKER_1_STATE_31, WORKER_1_STATE_32, WORKER_1_STATE_33, WORKER_1_STATE_34, WORKER_1_STATE_35, WORKER_1_STATE_36, WORKER_1_STATE_37, WORKER_1_STATE_38, WORKER_1_STATE_39, WORKER_1_STATE_40, WORKER_1_STATE_41, WORKER_1_STATE_42, WORKER_1_STATE_43, WORKER_1_STATE_44, WORKER_1_STATE_45, WORKER_1_STATE_46, WORKER_1_STATE_47, WORKER_1_STATE_48, WORKER_1_STATE_49, WORKER_1_STATE_50, WORKER_1_STATE_51, WORKER_1_STATE_52, WORKER_1_STATE_53} WORKER_1_state, WORKER_1_state_nxt;
-enum {WORKER_2_IDLE, WORKER_2_STATE_1, WORKER_2_STATE_2, WORKER_2_STATE_3, WORKER_2_STATE_4, WORKER_2_STATE_5} WORKER_2_state, WORKER_2_state_nxt;
+logic [1-1:0] RETURN_ADDRESS;
+logic [1-1:0] BACKUP_ADDRESS_ZONE1;
+logic [1-1:0] BACKUP_ADDRESS_ZONE2;
+enum {IDLE, STATE_1, STATE_2, STATE_3, STATE_4, STATE_5, STATE_6, STATE_7, STATE_8, STATE_9, STATE_10, STATE_11, STATE_12, STATE_13, STATE_14, STATE_15, STATE_16, STATE_17, STATE_18, STATE_19, STATE_20, STATE_21, STATE_22, STATE_23, STATE_24, STATE_25, STATE_26, STATE_27, STATE_28, STATE_29, STATE_30, STATE_31, STATE_32, STATE_33, STATE_34, STATE_35, STATE_36, STATE_37, STATE_38, STATE_39, STATE_40, STATE_41, STATE_42, STATE_43, STATE_44, STATE_45, STATE_46, STATE_47, STATE_48, STATE_49, STATE_50, STATE_51} state, state_nxt;
+enum {WORKER_1_IDLE, WORKER_1_STATE_1, WORKER_1_STATE_2, WORKER_1_STATE_3, WORKER_1_STATE_4, WORKER_1_STATE_5} WORKER_1_state, WORKER_1_state_nxt;
 nortl_edge_detector I_EVENT_EDGE_DETECTOR_BIT_INPUT (.CLK_I(CLK_I), .RST_ASYNC_I(RST_ASYNC_I), .SIGNAL(BIT_INPUT), .RISING(EVENT_BIT_INPUT_rising), .FALLING(EVENT_BIT_INPUT_falling));
 
 always_comb
@@ -1257,6 +1245,207 @@ begin
      case (state)
       IDLE: begin
          state_nxt = STATE_1;
+      end
+      STATE_2: begin
+         state_nxt = STATE_3;
+      end
+      STATE_3: begin
+         if (EVENT_BIT_INPUT_falling)
+         begin
+            state_nxt = STATE_4;
+         end
+      end
+      STATE_4: begin
+         state_nxt = STATE_5;
+      end
+      STATE_6: begin
+         if ((RX_COUNTER != 0))
+         begin
+            state_nxt = STATE_8;
+         end
+         if (~((RX_COUNTER != 0)))
+         begin
+            state_nxt = STATE_7;
+         end
+      end
+      STATE_7: begin
+         if ((RETURN_ADDRESS == 0))
+         begin
+            state_nxt = STATE_10;
+         end
+      end
+      STATE_8: begin
+         state_nxt = STATE_9;
+      end
+      STATE_9, STATE_5: begin
+         state_nxt = STATE_6;
+      end
+      STATE_10: begin
+         if ((RX_BIT_IDX != 8))
+         begin
+            state_nxt = STATE_12;
+         end
+         if (~((RX_BIT_IDX != 8)))
+         begin
+            state_nxt = STATE_11;
+         end
+      end
+      STATE_11: begin
+         state_nxt = STATE_19;
+      end
+      STATE_12: begin
+         state_nxt = STATE_13;
+      end
+      STATE_14: begin
+         if ((RX_COUNTER != 0))
+         begin
+            state_nxt = STATE_16;
+         end
+         if (~((RX_COUNTER != 0)))
+         begin
+            state_nxt = STATE_15;
+         end
+      end
+      STATE_15: begin
+         if ((RETURN_ADDRESS == 0))
+         begin
+            state_nxt = STATE_18;
+         end
+      end
+      STATE_16: begin
+         state_nxt = STATE_17;
+      end
+      STATE_17, STATE_13: begin
+         state_nxt = STATE_14;
+      end
+      STATE_18: begin
+         state_nxt = STATE_10;
+      end
+      STATE_19: begin
+         state_nxt = STATE_20;
+      end
+      STATE_20: begin
+         if ((RX_BYTE == 8))
+         begin
+            state_nxt = STATE_22;
+         end
+         if (~((RX_BYTE == 8)))
+         begin
+            state_nxt = STATE_33;
+         end
+      end
+      STATE_21: begin
+         state_nxt = STATE_51;
+      end
+      STATE_22: begin
+         if ((col_cursor == 0))
+         begin
+            state_nxt = STATE_24;
+         end
+         if (~((col_cursor == 0)))
+         begin
+            state_nxt = STATE_30;
+         end
+      end
+      STATE_23: begin
+         state_nxt = STATE_31;
+      end
+      STATE_24: begin
+         if ((row_cursor != 0))
+         begin
+            state_nxt = STATE_26;
+         end
+         if (~((row_cursor != 0)))
+         begin
+            state_nxt = STATE_28;
+         end
+      end
+      STATE_25: begin
+         state_nxt = STATE_29;
+      end
+      STATE_26: begin
+         state_nxt = STATE_27;
+      end
+      STATE_28, STATE_27: begin
+         state_nxt = STATE_25;
+      end
+      STATE_30, STATE_29: begin
+         state_nxt = STATE_23;
+      end
+      STATE_31: begin
+         state_nxt = STATE_32;
+      end
+      STATE_33: begin
+         if ((RX_BYTE == 127))
+         begin
+            state_nxt = STATE_35;
+         end
+         if (~((RX_BYTE == 127)))
+         begin
+            state_nxt = STATE_40;
+         end
+      end
+      STATE_34: begin
+         state_nxt = STATE_50;
+      end
+      STATE_35: begin
+         state_nxt = STATE_36;
+      end
+      STATE_36: begin
+         if ((RETURN_ADDRESS == 0))
+         begin
+            state_nxt = STATE_37;
+         end
+      end
+      STATE_37: begin
+         state_nxt = STATE_38;
+      end
+      STATE_38: begin
+         state_nxt = STATE_39;
+      end
+      STATE_40: begin
+         state_nxt = STATE_41;
+      end
+      STATE_41: begin
+         if ((col_cursor == 39))
+         begin
+            state_nxt = STATE_43;
+         end
+         if (~((col_cursor == 39)))
+         begin
+            state_nxt = STATE_48;
+         end
+      end
+      STATE_42: begin
+         state_nxt = STATE_49;
+      end
+      STATE_43: begin
+         if ((row_cursor == 24))
+         begin
+            state_nxt = STATE_45;
+         end
+         if (~((row_cursor == 24)))
+         begin
+            state_nxt = STATE_46;
+         end
+      end
+      STATE_44: begin
+         state_nxt = STATE_47;
+      end
+      STATE_46, STATE_45: begin
+         state_nxt = STATE_44;
+      end
+      STATE_48, STATE_47: begin
+         state_nxt = STATE_42;
+      end
+      STATE_49, STATE_39: begin
+         state_nxt = STATE_34;
+      end
+      STATE_50, STATE_32: begin
+         state_nxt = STATE_21;
+      end
+      STATE_51, STATE_1: begin
+         state_nxt = STATE_2;
       end
    endcase
    begin
@@ -1269,238 +1458,20 @@ begin
             WORKER_1_state_nxt = WORKER_1_STATE_1;
          end
       end
-      WORKER_1_STATE_1: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_2;
-      end
       WORKER_1_STATE_2: begin
          WORKER_1_state_nxt = WORKER_1_STATE_3;
       end
-      WORKER_1_STATE_4: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_5;
-      end
-      WORKER_1_STATE_5: begin
-         if (EVENT_BIT_INPUT_falling)
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_6;
-         end
-      end
-      WORKER_1_STATE_6: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_7;
-      end
-      WORKER_1_STATE_8: begin
-         if ((RX_COUNTER != 0))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_10;
-         end
-         if (~((RX_COUNTER != 0)))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_9;
-         end
-      end
-      WORKER_1_STATE_9: begin
-         if ((WORKER_1_RETURN_ADDRESS == 0))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_12;
-         end
-      end
-      WORKER_1_STATE_10: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_11;
-      end
-      WORKER_1_STATE_11, WORKER_1_STATE_7: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_8;
-      end
-      WORKER_1_STATE_12: begin
-         if ((RX_BIT_IDX != 8))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_14;
-         end
-         if (~((RX_BIT_IDX != 8)))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_13;
-         end
-      end
-      WORKER_1_STATE_13: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_21;
-      end
-      WORKER_1_STATE_14: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_15;
-      end
-      WORKER_1_STATE_16: begin
-         if ((RX_COUNTER != 0))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_18;
-         end
-         if (~((RX_COUNTER != 0)))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_17;
-         end
-      end
-      WORKER_1_STATE_17: begin
-         if ((WORKER_1_RETURN_ADDRESS == 0))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_20;
-         end
-      end
-      WORKER_1_STATE_18: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_19;
-      end
-      WORKER_1_STATE_19, WORKER_1_STATE_15: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_16;
-      end
-      WORKER_1_STATE_20: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_12;
-      end
-      WORKER_1_STATE_21: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_22;
-      end
-      WORKER_1_STATE_22: begin
-         if ((RX_BYTE == 8))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_24;
-         end
-         if (~((RX_BYTE == 8)))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_35;
-         end
-      end
-      WORKER_1_STATE_23: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_53;
-      end
-      WORKER_1_STATE_24: begin
-         if ((col_cursor == 0))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_26;
-         end
-         if (~((col_cursor == 0)))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_32;
-         end
-      end
-      WORKER_1_STATE_25: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_33;
-      end
-      WORKER_1_STATE_26: begin
-         if ((row_cursor != 0))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_28;
-         end
-         if (~((row_cursor != 0)))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_30;
-         end
-      end
-      WORKER_1_STATE_27: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_31;
-      end
-      WORKER_1_STATE_28: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_29;
-      end
-      WORKER_1_STATE_30, WORKER_1_STATE_29: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_27;
-      end
-      WORKER_1_STATE_32, WORKER_1_STATE_31: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_25;
-      end
-      WORKER_1_STATE_33: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_34;
-      end
-      WORKER_1_STATE_35: begin
-         if ((RX_BYTE == 127))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_37;
-         end
-         if (~((RX_BYTE == 127)))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_42;
-         end
-      end
-      WORKER_1_STATE_36: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_52;
-      end
-      WORKER_1_STATE_37: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_38;
-      end
-      WORKER_1_STATE_38: begin
-         if ((WORKER_1_RETURN_ADDRESS == 0))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_39;
-         end
-      end
-      WORKER_1_STATE_39: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_40;
-      end
-      WORKER_1_STATE_40: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_41;
-      end
-      WORKER_1_STATE_42: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_43;
-      end
-      WORKER_1_STATE_43: begin
-         if ((col_cursor == 39))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_45;
-         end
-         if (~((col_cursor == 39)))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_50;
-         end
-      end
-      WORKER_1_STATE_44: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_51;
-      end
-      WORKER_1_STATE_45: begin
-         if ((row_cursor == 24))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_47;
-         end
-         if (~((row_cursor == 24)))
-         begin
-            WORKER_1_state_nxt = WORKER_1_STATE_48;
-         end
-      end
-      WORKER_1_STATE_46: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_49;
-      end
-      WORKER_1_STATE_48, WORKER_1_STATE_47: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_46;
-      end
-      WORKER_1_STATE_50, WORKER_1_STATE_49: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_44;
-      end
-      WORKER_1_STATE_51, WORKER_1_STATE_41: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_36;
-      end
-      WORKER_1_STATE_52, WORKER_1_STATE_34: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_23;
-      end
-      WORKER_1_STATE_53, WORKER_1_STATE_3: begin
-         WORKER_1_state_nxt = WORKER_1_STATE_4;
-      end
-   endcase
-   begin
-      WORKER_2_state_nxt = WORKER_2_state;
-   end
-     case (WORKER_2_state)
-      WORKER_2_IDLE: begin
-         if ((WORKER_2_start & (WORKER_2_select == 1)))
-         begin
-            WORKER_2_state_nxt = WORKER_2_STATE_1;
-         end
-      end
-      WORKER_2_STATE_2: begin
-         WORKER_2_state_nxt = WORKER_2_STATE_3;
-      end
-      WORKER_2_STATE_3: begin
+      WORKER_1_STATE_3: begin
          if (stop_vga)
          begin
-            WORKER_2_state_nxt = WORKER_2_STATE_5;
+            WORKER_1_state_nxt = WORKER_1_STATE_5;
          end
       end
-      WORKER_2_STATE_4, WORKER_2_STATE_1: begin
-         WORKER_2_state_nxt = WORKER_2_STATE_2;
+      WORKER_1_STATE_4, WORKER_1_STATE_1: begin
+         WORKER_1_state_nxt = WORKER_1_STATE_2;
       end
-      WORKER_2_STATE_5: begin
-         WORKER_2_state_nxt = WORKER_2_STATE_4;
+      WORKER_1_STATE_5: begin
+         WORKER_1_state_nxt = WORKER_1_STATE_4;
       end
    endcase
 end
@@ -2524,30 +2495,18 @@ begin
       RX_BIT_IDX <= 0;
       RX_SHIFT <= 0;
       RX_BYTE <= 0;
-      finish <= 0;
-      passed <= 0;
-      error_ctr <= 0;
-      timeout <= 0;
-      timeout_ctr <= 0;
-      reset_timeout <= 0;
       WORKER_1_reset <= 0;
       WORKER_1_start <= 0;
       WORKER_1_select <= 0;
       WORKER_1_idle <= 1;
-      WORKER_2_reset <= 0;
-      WORKER_2_start <= 0;
-      WORKER_2_select <= 0;
-      WORKER_2_idle <= 1;
-      WORKER_1_RETURN_ADDRESS <= 0;
-      WORKER_1_BACKUP_ADDRESS_ZONE1 <= 0;
-      WORKER_1_BACKUP_ADDRESS_ZONE2 <= 0;
+      RETURN_ADDRESS <= 0;
+      BACKUP_ADDRESS_ZONE1 <= 0;
+      BACKUP_ADDRESS_ZONE2 <= 0;
    end
    else 
    begin
       WORKER_1_reset <= 0;
       WORKER_1_start <= 0;
-      WORKER_2_reset <= 0;
-      WORKER_2_start <= 0;
         case (state_nxt)
          IDLE: begin
             memory_00_00 <= 0;
@@ -3565,79 +3524,64 @@ begin
             RX_BIT_IDX <= 0;
             RX_SHIFT <= 0;
             RX_BYTE <= 0;
-            finish <= 0;
-            passed <= 0;
-            error_ctr <= 0;
-            timeout <= 0;
-            timeout_ctr <= 0;
-            reset_timeout <= 0;
             WORKER_1_reset <= 0;
             WORKER_1_start <= 0;
             WORKER_1_select <= 0;
             WORKER_1_idle <= 1;
-            WORKER_2_reset <= 0;
-            WORKER_2_start <= 0;
-            WORKER_2_select <= 0;
-            WORKER_2_idle <= 1;
-            WORKER_1_RETURN_ADDRESS <= 0;
-            WORKER_1_BACKUP_ADDRESS_ZONE1 <= 0;
-            WORKER_1_BACKUP_ADDRESS_ZONE2 <= 0;
+            RETURN_ADDRESS <= 0;
+            BACKUP_ADDRESS_ZONE1 <= 0;
+            BACKUP_ADDRESS_ZONE2 <= 0;
          end
-      endcase
-        case (WORKER_1_state_nxt)
-         WORKER_1_STATE_1: begin
-            WORKER_1_idle <= 0;
+         STATE_1: begin
+            WORKER_1_start <= 1;
+            WORKER_1_select <= 1;
          end
-         WORKER_1_STATE_3: begin
-            WORKER_2_start <= 1;
-            WORKER_2_select <= 1;
-         end
-         WORKER_1_STATE_5: begin
+         STATE_3: begin
             BIT_INPUT <= UART_RX;
          end
-         WORKER_1_STATE_6: begin
-            WORKER_1_RETURN_ADDRESS <= 0;
-            WORKER_1_BACKUP_ADDRESS_ZONE1 <= WORKER_1_RETURN_ADDRESS;
+         STATE_4: begin
+            RETURN_ADDRESS <= 0;
+            BACKUP_ADDRESS_ZONE1 <= RETURN_ADDRESS;
          end
-         WORKER_1_STATE_7: begin
+         STATE_5: begin
             RX_COUNTER <= 92;
          end
-         WORKER_1_STATE_12: begin
-            WORKER_1_RETURN_ADDRESS <= WORKER_1_BACKUP_ADDRESS_ZONE1;
+         STATE_10: begin
+            RETURN_ADDRESS <= BACKUP_ADDRESS_ZONE1;
             RX_BIT_IDX <= 0;
          end
-         WORKER_1_STATE_13: begin
+         STATE_11: begin
             RX_BYTE <= RX_SHIFT;
          end
-         WORKER_1_STATE_14: begin
+         STATE_12: begin
             RX_SHIFT <= ((RX_SHIFT >> 1) | (BIT_INPUT ? 8'h80 : 8'h00));
             RX_BIT_IDX <= (RX_BIT_IDX + 1);
-            WORKER_1_RETURN_ADDRESS <= 0;
-            WORKER_1_BACKUP_ADDRESS_ZONE1 <= WORKER_1_RETURN_ADDRESS;
+            RETURN_ADDRESS <= 0;
+            BACKUP_ADDRESS_ZONE1 <= RETURN_ADDRESS;
          end
-         WORKER_1_STATE_15: begin
+         STATE_13: begin
             RX_COUNTER <= 63;
          end
-         WORKER_1_STATE_18, WORKER_1_STATE_10: begin
+         STATE_16, STATE_8: begin
             RX_COUNTER <= (RX_COUNTER - 1);
          end
-         WORKER_1_STATE_20: begin
-            WORKER_1_RETURN_ADDRESS <= WORKER_1_BACKUP_ADDRESS_ZONE1;
+         STATE_18: begin
+            RETURN_ADDRESS <= BACKUP_ADDRESS_ZONE1;
          end
-         WORKER_1_STATE_28: begin
+         STATE_26: begin
             col_cursor <= 39;
          end
-         WORKER_1_STATE_29: begin
+         STATE_27: begin
             row_cursor <= (row_cursor - 1);
          end
-         WORKER_1_STATE_30: begin
+         STATE_28: begin
             col_cursor <= 0;
             row_cursor <= 0;
          end
-         WORKER_1_STATE_32: begin
+         STATE_30: begin
             col_cursor <= (col_cursor - 1);
          end
-         WORKER_1_STATE_34: begin
+         STATE_32: begin
             if (((row_cursor == 0) & (col_cursor == 0)))
             begin
                memory_00_00 <= 0;
@@ -7639,11 +7583,11 @@ begin
                memory_24_39 <= 0;
             end
          end
-         WORKER_1_STATE_37: begin
-            WORKER_1_RETURN_ADDRESS <= 0;
-            WORKER_1_BACKUP_ADDRESS_ZONE2 <= WORKER_1_RETURN_ADDRESS;
+         STATE_35: begin
+            RETURN_ADDRESS <= 0;
+            BACKUP_ADDRESS_ZONE2 <= RETURN_ADDRESS;
          end
-         WORKER_1_STATE_38: begin
+         STATE_36: begin
             memory_00_00 <= 0;
             memory_00_01 <= 0;
             memory_00_02 <= 0;
@@ -8645,13 +8589,13 @@ begin
             memory_24_38 <= 0;
             memory_24_39 <= 0;
          end
-         WORKER_1_STATE_39: begin
-            WORKER_1_RETURN_ADDRESS <= WORKER_1_BACKUP_ADDRESS_ZONE2;
+         STATE_37: begin
+            RETURN_ADDRESS <= BACKUP_ADDRESS_ZONE2;
          end
-         WORKER_1_STATE_42: begin
+         STATE_40: begin
             input_code <= ((RX_BYTE == 255) ? 31 : ((RX_BYTE == 254) ? 31 : ((RX_BYTE == 253) ? 31 : ((RX_BYTE == 252) ? 31 : ((RX_BYTE == 251) ? 31 : ((RX_BYTE == 250) ? 31 : ((RX_BYTE == 249) ? 31 : ((RX_BYTE == 248) ? 31 : ((RX_BYTE == 247) ? 31 : ((RX_BYTE == 246) ? 31 : ((RX_BYTE == 245) ? 31 : ((RX_BYTE == 244) ? 31 : ((RX_BYTE == 243) ? 31 : ((RX_BYTE == 242) ? 31 : ((RX_BYTE == 241) ? 31 : ((RX_BYTE == 240) ? 31 : ((RX_BYTE == 239) ? 31 : ((RX_BYTE == 238) ? 31 : ((RX_BYTE == 237) ? 31 : ((RX_BYTE == 236) ? 31 : ((RX_BYTE == 235) ? 31 : ((RX_BYTE == 234) ? 31 : ((RX_BYTE == 233) ? 31 : ((RX_BYTE == 232) ? 31 : ((RX_BYTE == 231) ? 31 : ((RX_BYTE == 230) ? 31 : ((RX_BYTE == 229) ? 31 : ((RX_BYTE == 228) ? 31 : ((RX_BYTE == 227) ? 31 : ((RX_BYTE == 226) ? 31 : ((RX_BYTE == 225) ? 31 : ((RX_BYTE == 224) ? 31 : ((RX_BYTE == 223) ? 31 : ((RX_BYTE == 222) ? 31 : ((RX_BYTE == 221) ? 31 : ((RX_BYTE == 220) ? 31 : ((RX_BYTE == 219) ? 31 : ((RX_BYTE == 218) ? 31 : ((RX_BYTE == 217) ? 31 : ((RX_BYTE == 216) ? 31 : ((RX_BYTE == 215) ? 31 : ((RX_BYTE == 214) ? 31 : ((RX_BYTE == 213) ? 31 : ((RX_BYTE == 212) ? 31 : ((RX_BYTE == 211) ? 31 : ((RX_BYTE == 210) ? 31 : ((RX_BYTE == 209) ? 31 : ((RX_BYTE == 208) ? 31 : ((RX_BYTE == 207) ? 31 : ((RX_BYTE == 206) ? 31 : ((RX_BYTE == 205) ? 31 : ((RX_BYTE == 204) ? 31 : ((RX_BYTE == 203) ? 31 : ((RX_BYTE == 202) ? 31 : ((RX_BYTE == 201) ? 31 : ((RX_BYTE == 200) ? 31 : ((RX_BYTE == 199) ? 31 : ((RX_BYTE == 198) ? 31 : ((RX_BYTE == 197) ? 31 : ((RX_BYTE == 196) ? 31 : ((RX_BYTE == 195) ? 31 : ((RX_BYTE == 194) ? 31 : ((RX_BYTE == 193) ? 31 : ((RX_BYTE == 192) ? 31 : ((RX_BYTE == 191) ? 31 : ((RX_BYTE == 190) ? 31 : ((RX_BYTE == 189) ? 31 : ((RX_BYTE == 188) ? 31 : ((RX_BYTE == 187) ? 31 : ((RX_BYTE == 186) ? 31 : ((RX_BYTE == 185) ? 31 : ((RX_BYTE == 184) ? 31 : ((RX_BYTE == 183) ? 31 : ((RX_BYTE == 182) ? 31 : ((RX_BYTE == 181) ? 31 : ((RX_BYTE == 180) ? 31 : ((RX_BYTE == 179) ? 31 : ((RX_BYTE == 178) ? 31 : ((RX_BYTE == 177) ? 31 : ((RX_BYTE == 176) ? 31 : ((RX_BYTE == 175) ? 31 : ((RX_BYTE == 174) ? 31 : ((RX_BYTE == 173) ? 31 : ((RX_BYTE == 172) ? 31 : ((RX_BYTE == 171) ? 31 : ((RX_BYTE == 170) ? 31 : ((RX_BYTE == 169) ? 31 : ((RX_BYTE == 168) ? 31 : ((RX_BYTE == 167) ? 31 : ((RX_BYTE == 166) ? 31 : ((RX_BYTE == 165) ? 31 : ((RX_BYTE == 164) ? 31 : ((RX_BYTE == 163) ? 31 : ((RX_BYTE == 162) ? 31 : ((RX_BYTE == 161) ? 31 : ((RX_BYTE == 160) ? 31 : ((RX_BYTE == 159) ? 31 : ((RX_BYTE == 158) ? 31 : ((RX_BYTE == 157) ? 31 : ((RX_BYTE == 156) ? 31 : ((RX_BYTE == 155) ? 31 : ((RX_BYTE == 154) ? 31 : ((RX_BYTE == 153) ? 31 : ((RX_BYTE == 152) ? 31 : ((RX_BYTE == 151) ? 31 : ((RX_BYTE == 150) ? 31 : ((RX_BYTE == 149) ? 31 : ((RX_BYTE == 148) ? 31 : ((RX_BYTE == 147) ? 31 : ((RX_BYTE == 146) ? 31 : ((RX_BYTE == 145) ? 31 : ((RX_BYTE == 144) ? 31 : ((RX_BYTE == 143) ? 31 : ((RX_BYTE == 142) ? 31 : ((RX_BYTE == 141) ? 31 : ((RX_BYTE == 140) ? 31 : ((RX_BYTE == 139) ? 31 : ((RX_BYTE == 138) ? 31 : ((RX_BYTE == 137) ? 31 : ((RX_BYTE == 136) ? 31 : ((RX_BYTE == 135) ? 31 : ((RX_BYTE == 134) ? 31 : ((RX_BYTE == 133) ? 31 : ((RX_BYTE == 132) ? 31 : ((RX_BYTE == 131) ? 31 : ((RX_BYTE == 130) ? 31 : ((RX_BYTE == 129) ? 31 : ((RX_BYTE == 128) ? 31 : ((RX_BYTE == 127) ? 31 : ((RX_BYTE == 126) ? 31 : ((RX_BYTE == 125) ? 31 : ((RX_BYTE == 124) ? 31 : ((RX_BYTE == 123) ? 31 : ((RX_BYTE == 122) ? 31 : ((RX_BYTE == 121) ? 31 : ((RX_BYTE == 120) ? 31 : ((RX_BYTE == 119) ? 31 : ((RX_BYTE == 118) ? 31 : ((RX_BYTE == 117) ? 31 : ((RX_BYTE == 116) ? 31 : ((RX_BYTE == 115) ? 31 : ((RX_BYTE == 114) ? 31 : ((RX_BYTE == 113) ? 31 : ((RX_BYTE == 112) ? 31 : ((RX_BYTE == 111) ? 31 : ((RX_BYTE == 110) ? 31 : ((RX_BYTE == 109) ? 31 : ((RX_BYTE == 108) ? 31 : ((RX_BYTE == 107) ? 31 : ((RX_BYTE == 106) ? 31 : ((RX_BYTE == 105) ? 31 : ((RX_BYTE == 104) ? 31 : ((RX_BYTE == 103) ? 31 : ((RX_BYTE == 102) ? 31 : ((RX_BYTE == 101) ? 31 : ((RX_BYTE == 100) ? 31 : ((RX_BYTE == 99) ? 31 : ((RX_BYTE == 98) ? 31 : ((RX_BYTE == 97) ? 31 : ((RX_BYTE == 96) ? 31 : ((RX_BYTE == 95) ? 31 : ((RX_BYTE == 94) ? 31 : ((RX_BYTE == 93) ? 61 : ((RX_BYTE == 92) ? 31 : ((RX_BYTE == 91) ? 59 : ((RX_BYTE == 90) ? 58 : ((RX_BYTE == 89) ? 57 : ((RX_BYTE == 88) ? 56 : ((RX_BYTE == 87) ? 55 : ((RX_BYTE == 86) ? 54 : ((RX_BYTE == 85) ? 53 : ((RX_BYTE == 84) ? 52 : ((RX_BYTE == 83) ? 51 : ((RX_BYTE == 82) ? 50 : ((RX_BYTE == 81) ? 49 : ((RX_BYTE == 80) ? 48 : ((RX_BYTE == 79) ? 47 : ((RX_BYTE == 78) ? 46 : ((RX_BYTE == 77) ? 45 : ((RX_BYTE == 76) ? 44 : ((RX_BYTE == 75) ? 43 : ((RX_BYTE == 74) ? 42 : ((RX_BYTE == 73) ? 41 : ((RX_BYTE == 72) ? 40 : ((RX_BYTE == 71) ? 39 : ((RX_BYTE == 70) ? 38 : ((RX_BYTE == 69) ? 37 : ((RX_BYTE == 68) ? 36 : ((RX_BYTE == 67) ? 35 : ((RX_BYTE == 66) ? 34 : ((RX_BYTE == 65) ? 33 : ((RX_BYTE == 64) ? 32 : ((RX_BYTE == 63) ? 31 : ((RX_BYTE == 62) ? 30 : ((RX_BYTE == 61) ? 29 : ((RX_BYTE == 60) ? 28 : ((RX_BYTE == 59) ? 27 : ((RX_BYTE == 58) ? 26 : ((RX_BYTE == 57) ? 25 : ((RX_BYTE == 56) ? 24 : ((RX_BYTE == 55) ? 23 : ((RX_BYTE == 54) ? 22 : ((RX_BYTE == 53) ? 21 : ((RX_BYTE == 52) ? 20 : ((RX_BYTE == 51) ? 19 : ((RX_BYTE == 50) ? 18 : ((RX_BYTE == 49) ? 17 : ((RX_BYTE == 48) ? 16 : ((RX_BYTE == 47) ? 15 : ((RX_BYTE == 46) ? 14 : ((RX_BYTE == 45) ? 13 : ((RX_BYTE == 44) ? 12 : ((RX_BYTE == 43) ? 11 : ((RX_BYTE == 42) ? 10 : ((RX_BYTE == 41) ? 9 : ((RX_BYTE == 40) ? 8 : ((RX_BYTE == 39) ? 7 : ((RX_BYTE == 38) ? 6 : ((RX_BYTE == 37) ? 5 : ((RX_BYTE == 36) ? 31 : ((RX_BYTE == 35) ? 31 : ((RX_BYTE == 34) ? 2 : ((RX_BYTE == 33) ? 1 : ((RX_BYTE == 32) ? 0 : 31))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))));
          end
-         WORKER_1_STATE_43: begin
+         STATE_41: begin
             if (((row_cursor == 0) & (col_cursor == 0)))
             begin
                memory_00_00 <= input_code;
@@ -12653,24 +12597,24 @@ begin
                memory_24_39 <= input_code;
             end
          end
-         WORKER_1_STATE_45, WORKER_1_STATE_40: begin
+         STATE_43, STATE_38: begin
             col_cursor <= 0;
          end
-         WORKER_1_STATE_47, WORKER_1_STATE_41: begin
+         STATE_45, STATE_39: begin
             row_cursor <= 0;
          end
-         WORKER_1_STATE_48: begin
+         STATE_46: begin
             row_cursor <= (row_cursor + 1);
          end
-         WORKER_1_STATE_50: begin
+         STATE_48: begin
             col_cursor <= (col_cursor + 1);
          end
       endcase
-        case (WORKER_2_state_nxt)
-         WORKER_2_STATE_1: begin
-            WORKER_2_idle <= 0;
+        case (WORKER_1_state_nxt)
+         WORKER_1_STATE_1: begin
+            WORKER_1_idle <= 0;
          end
-         WORKER_2_STATE_3: begin
+         WORKER_1_STATE_3: begin
             counter_h <= ((counter_h == 799) ? 0 : (counter_h + 1));
             if (((counter_h == 799) && (counter_v == 520)))
             begin
@@ -12727,7 +12671,6 @@ begin
    begin
       
       
-      
    end
 end
 // synthesis translate_on
@@ -12771,25 +12714,6 @@ begin
       else 
       begin
          WORKER_1_state <= WORKER_1_state_nxt;
-      end
-   end
-end
-
-always_ff @(posedge CLK_I or posedge RST_ASYNC_I)
-begin
-   if (RST_ASYNC_I)
-   begin
-      WORKER_2_state <= WORKER_2_IDLE;
-   end
-   else 
-   begin
-      if (WORKER_2_reset)
-      begin
-         WORKER_2_state <= WORKER_2_IDLE;
-      end
-      else 
-      begin
-         WORKER_2_state <= WORKER_2_state_nxt;
       end
    end
 end

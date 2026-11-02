@@ -36,6 +36,7 @@ class MainEngine(Engine):
 
         self.uart.run()
 
+    def export_verilog(self) -> None:
         with open('Commodore.sv', 'w') as fptr:
             fptr.write(self.to_verilog())
 
@@ -43,3 +44,4 @@ class MainEngine(Engine):
 if __name__ == '__main__':
     engine = MainEngine('Commodore')
     engine.build()
+    engine.export_verilog()
