@@ -12,7 +12,6 @@ class CommodoreTestBase(CoverageTestBase):
     def init_sequence(self) -> Engine:
         self.main_engine = MainEngine('my_engine')
         self.uart_recieve_signal = self.main_engine.signal
-        # self.uart_recieve_signal.access_checker.disable_check('identical_rw')
         self.bit_ticks = self.main_engine.uart.data_reader.bit_ticks
         self.delay_counter = self.main_engine.define_local('TESTBASE_DELAY_COUNTER', 16, 0)
 

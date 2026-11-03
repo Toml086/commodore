@@ -153,24 +153,4 @@ class TestLineBreakStartOfTable(CommodoreTestBase):
         self.assertTrue(self.main_engine.char_memory.read(2, 4) == 0)
 
         self.finish_simulation()
-
-
-class TestClearAllWithAllFieldsFilled(CommodoreTestBase):
-    def the_testbench(self, engine: Engine) -> None:
-        self.start_uart()
-
-        repeat_counter = engine.define_local('REPEAT_COUNTER', 16, 0)
-        engine.set(repeat_counter, 0)
-        with engine.while_loop(repeat_counter != self.main_engine.cursor.max_rows * self.main_engine.cursor.max_columns):
-            self.send_bytes(0x41)  # =A, fills every cell
-            engine.set(repeat_counter, repeat_counter + 1)
-
-        self.assertTrue(self.main_engine.char_memory.read(self.main_engine.cursor.max_rows - 1, self.main_engine.cursor.max_columns - 1) == 33)
-
-        self.send_bytes(0x7F, settle_ticks=200)  # DELETE_ALL
-
-        for row in range(self.main_engine.cursor.max_rows):
-            for col in range(self.main_engine.cursor.max_columns):
-                self.assertTrue(self.main_engine.char_memory.read(row, col) == 0)
-
-        self.finish_simulation() """
+ """

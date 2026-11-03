@@ -38,5 +38,5 @@ class TextWriter:
 
     def clear_all(self, engine: Engine) -> None:
         self.character_memory.clear_all()
-        self.engine.sync()
+        engine.sync()
         self.cursor.reset()
