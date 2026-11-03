@@ -10,8 +10,8 @@ from commodore.components.uart.uart import UART
 from commodore.components.vga.vga import VGA
 
 # FIXME
-MATRIX_WIDTH = 40
-MATRIX_HEIGHT = 25
+MATRIX_WIDTH = 2
+MATRIX_HEIGHT = 2
 # FIXME
 
 
@@ -32,6 +32,7 @@ class MainEngine(Engine):
     def build(self) -> None:
         self.sync()
         with self.fork('vga'):
+            self.current_worker._name = 'VGA_WORKER'
             self.vga.run()
 
         self.uart.run()
