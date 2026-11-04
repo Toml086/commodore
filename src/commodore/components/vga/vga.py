@@ -69,14 +69,13 @@ class VGA:
                 },
             )
 
-            # color = self.stash.color(self.counter_h, self.counter_v)
+            next_line = IfThenElse(last_line, 0, self.counter_v + 1)
+            self.stash.update(self.counter_h, self.counter_v, next_line)
 
-            # for out, mask in ((self.r, 0b100), (self.g, 0b010), (self.b, 0b001)):
-            # self.engine.set(out, (color & mask) != 0)
-
-            self.engine.set(self.r, (self.stash.color(self.counter_h, self.counter_v) & 0b100) != 0)
-            self.engine.set(self.g, (self.stash.color(self.counter_h, self.counter_v) & 0b010) != 0)
-            self.engine.set(self.b, (self.stash.color(self.counter_h, self.counter_v) & 0b001) != 0)
+            color = self.stash.color(self.counter_h, self.counter_v)
+            self.engine.set(self.r, (color & 0b100) != 0)
+            self.engine.set(self.g, (color & 0b010) != 0)
+            self.engine.set(self.b, (color & 0b001) != 0)
 
             with self.engine.condition(self.stop_output):
                 pass

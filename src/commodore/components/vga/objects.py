@@ -27,6 +27,10 @@ class GraphicsObject(metaclass=ABCMeta):
     def tick(self) -> None:
         """State update for a time step."""
 
+    @abstractmethod
+    def update(self, x: Renderable, y: Renderable, y_next: Renderable) -> None:
+        pass
+
     def type(self, x: Renderable, y: Renderable) -> Renderable:
         return IfThenElse(self.visible(x, y), self._type, Const(0, 4))
 
@@ -85,6 +89,9 @@ class Box(GraphicsObject):
 
     def visible(self, x: Operand, y: Operand) -> Renderable:
         return All(x >= self.lx, y >= self.ly, x < self.ux, y < self.uy)  # type: ignore[arg-type]
+
+    def update(self, x: Renderable, y: Renderable, y_next: Renderable) -> None:
+        pass
 
     def tick(self) -> None:
         pass

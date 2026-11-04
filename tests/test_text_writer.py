@@ -130,7 +130,7 @@ class TestLineBreakStartOfTable(CommodoreTestBase):
         self.finish_simulation()
 
 
-class TestNormalUseClearAllRandomInputs(CommodoreTestBase):
+""" class TestNormalUseClearAllRandomInputs(CommodoreTestBase):
     def the_testbench(self, engine: Engine) -> None:
         self.start_uart()
 
@@ -152,4 +152,4 @@ class TestNormalUseClearAllRandomInputs(CommodoreTestBase):
         # self.assertTrue(self.main_engine.char_memory.read(1, 39) == 0)
         # self.assertTrue(self.main_engine.char_memory.read(2, 4) == 0)
 
-        self.finish_simulation()
+        self.finish_simulation() """

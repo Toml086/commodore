@@ -205,7 +205,7 @@ end
 endmodule
 
 
-module input  (input logic CLK_I,
+module input_device  (input logic CLK_I,
 input logic RST_ASYNC_I,
 output logic BIT_OUTPUT,
 input logic [7:0] KEY_CODE,

@@ -11,17 +11,15 @@ class InputEngine(Engine):
         self.key_code = self.define_input('KEY_CODE', 8)
         self.key_valid = self.define_input('KEY_VALID', 1)
 
-        self.input_local = self.define_local('LOCAL_INPUT', 8, 0)
-
     def build(self) -> None:
         self.sync()
         self.data_sender.idle()
 
         with self.while_loop(Const(True)):
             self.wait_for(self.key_valid.rising())
-            self.set(self.input_local, self.key_code)
+
             self.sync()
-            self.data_sender.send_data(self, self.input_local)
+            self.data_sender.send_data(self, self.key_code)
 
         with open('Input_device.sv', 'w') as fptr:
             fptr.write(self.to_verilog())
